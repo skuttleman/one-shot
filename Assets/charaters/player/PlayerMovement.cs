@@ -6,19 +6,24 @@ using Game.Utils;
 
 public class PlayerMovement : MonoBehaviour
 {
-    static readonly float MOVE_SPEED = 850f;
+    [SerializeField] static float MOVE_SPEED = 850f;
 
     Animator animator;
     float rotationSpeed = 8f;
     float rotationZ = 0f;
     Vector2 movement = Vector2.zero;
-    Rigidbody rigidBody;
+
+    // animation state
     bool isMoving = false;
+    bool isScoping = false;
+    bool isAiming = false;
+    bool isLooking = false;
+    bool isCrawling = false;
+    bool isStanding = false;
 
     void Start()
     {
         animator = GetComponent<Animator>();
-        rigidBody = GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -27,12 +32,16 @@ public class PlayerMovement : MonoBehaviour
             transform.rotation,
             Quaternion.Euler(0, 0, rotationZ),
             rotationSpeed * Time.deltaTime);
-        Vector3 force = Math.upgrade(movement) * MOVE_SPEED * Time.deltaTime;
-        rigidBody.AddForce(force);
+        transform.position += Vectors.Upgrade(movement) * Time.deltaTime;
     }
 
     void OnAim(InputValue value)
     {
+        if (!isCrawling || !isMoving)
+        {
+            isAiming = value.Get<float>() >= 0.5;
+            animator.SetBool("isAiming", isAiming);
+        }
     }
 
     void OnAttack(InputValue value)
@@ -42,50 +51,69 @@ public class PlayerMovement : MonoBehaviour
     void OnLook(InputValue value)
     {
         Vector2 rotation = value.Get<Vector2>();
-        bool isRotating = rotation != Vector2.zero;
-        if (isRotating) rotationZ = Math.Angle(Vector2.zero, rotation);
+        isLooking = rotation != Vector2.zero;
+        if (isLooking) rotationZ = Vectors.Angle(Vector2.zero, rotation);
     }
 
     void OnMove(InputValue value)
     {
-        movement = value.Get<Vector2>();
-        isMoving = movement != Vector2.zero;
-        animator.SetBool("isMoving", isMoving);
-        if (isMoving) rotationZ = Math.Angle(Vector2.zero, movement);
+        if (!isCrawling || (!isAiming && !isScoping))
+        {
+            movement = value.Get<Vector2>();
+            isMoving = movement != Vector2.zero;
+            animator.SetBool("isMoving", isMoving);
+            rotationZ = Vectors.Angle(Vector2.zero, movement);
+        }
+        else if (movement != Vector2.zero && isCrawling && (isScoping || isAiming))
+        {
+            rotationZ = Vectors.Angle(Vector2.zero, value.Get<Vector2>());
+        }
     }
 
     void OnBinoculars(InputValue value)
     {
+        if (!isCrawling || !isMoving)
+        {
+            isScoping = value.isPressed;
+            animator.SetBool("isScoping", isScoping);
+        }
     }
 
     void OnStance(InputValue value)
     {
         bool held = value.Get<float>() >= 0.5f;
-        bool isCrouching = animator.GetBool("isCrouching");
-        bool isCrawling = animator.GetBool("isCrawling");
+        isStanding = animator.GetBool("isStanding");
+        isCrawling = animator.GetBool("isCrawling");
 
         if (held && isCrawling)
         {
-            isCrouching = false;
+            isStanding = true;
             isCrawling = false;
         }
         else if (held)
         {
-            isCrouching = false;
+            isStanding = false;
             isCrawling = true;
+            if (isMoving)
+            {
+                isAiming = false;
+                isScoping = false;
+                animator.SetBool("isAiming", isAiming);
+                animator.SetBool("isScoping", isScoping);
+            }
         }
-        else if (isCrouching)
+        else if (!isCrawling && !isStanding)
         {
-            isCrouching = false;
+            isStanding = true;
             isCrawling = false;
         }
         else
         {
-            isCrouching = true;
+            isStanding = false;
             isCrawling = false;
         }
 
-        animator.SetBool("isCrouching", isCrouching);
+        animator.SetBool("isStanding", isStanding);
         animator.SetBool("isCrawling", isCrawling);
     }
 
