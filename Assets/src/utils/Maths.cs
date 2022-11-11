@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Utils
 {
-    public static class Math
+    public static class Maths
     {
         public static bool NonZero(float value)
         {

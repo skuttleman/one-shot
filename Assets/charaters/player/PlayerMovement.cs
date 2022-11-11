@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Game.Utils;
+using System;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] static float MOVE_SPEED = 850f;
-
     Animator animator;
     float rotationSpeed = 8f;
     float rotationZ = 0f;
@@ -26,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    private void Update()
+    void Update()
     {
         transform.rotation = Quaternion.Lerp(
             transform.rotation,
@@ -57,16 +56,19 @@ public class PlayerMovement : MonoBehaviour
 
     void OnMove(InputValue value)
     {
+        Vector2 moveAmount = value.Get<Vector2>();
+
         if (!isCrawling || (!isAiming && !isScoping))
         {
-            movement = value.Get<Vector2>();
+            movement = moveAmount;
             isMoving = movement != Vector2.zero;
             animator.SetBool("isMoving", isMoving);
-            rotationZ = Vectors.Angle(Vector2.zero, movement);
+            if (isMoving) rotationZ = Vectors.Angle(Vector2.zero, movement);
         }
-        else if (movement != Vector2.zero && isCrawling && (isScoping || isAiming))
+        else if (moveAmount != Vector2.zero)
         {
-            rotationZ = Vectors.Angle(Vector2.zero, value.Get<Vector2>());
+            rotationZ = Vectors.Angle(Vector2.zero, moveAmount);
+
         }
     }
 
@@ -120,4 +122,10 @@ public class PlayerMovement : MonoBehaviour
     void OnMoveModifier(InputValue value)
     {
     }
+
+    public bool IsAiming() => isAiming;
+    public bool IsScoping() => isScoping;
+    public bool IsMoving() => isMoving;
+    public bool IsStanding() => isStanding;
+    public bool IsCrawling() => isCrawling;
 }
