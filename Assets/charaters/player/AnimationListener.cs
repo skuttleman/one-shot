@@ -5,6 +5,12 @@ using UnityEngine;
 public class AnimationListener : MonoBehaviour
 {
     AttackMode mode = AttackMode.HAND;
+    PlayerMovement movement;
+
+    void Start()
+    {
+        movement = gameObject.GetComponent<PlayerMovement>();
+    }
 
     public AttackMode Mode() => mode;
 
@@ -21,6 +27,10 @@ public class AnimationListener : MonoBehaviour
     public void OnAttackHand()
     {
         mode = AttackMode.HAND;
+    }
+
+    public void OnStep()
+    {
     }
 
 }

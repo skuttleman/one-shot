@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
             Quaternion.Euler(0, 0, rotationZ),
             rotationSpeed * Time.deltaTime);
 
-        float speed = 1f;
+        float speed = movementModifer;
         switch (stance)
         {
             case 0:
@@ -54,7 +54,10 @@ public class PlayerMovement : MonoBehaviour
                 speed = crawlSpeed;
                 break;
         }
-        transform.position += Vectors.Upgrade(movement) * Time.deltaTime * speed * movementModifer;
+        if (isAiming) speed *= 0.9f;
+        else if (isScoping) speed *= 0.6f;
+        animator.speed = Mathf.Max(Mathf.Abs(movement.x), Mathf.Abs(movement.y)) * speed;
+        transform.position += speed * Time.deltaTime * Vectors.Upgrade(movement);
     }
 
     void OnAim(InputValue value)
@@ -144,7 +147,6 @@ public class PlayerMovement : MonoBehaviour
         {
             movementModifer = 1f;
         }
-
     }
 
     public ISet<string> AnimationClips()
@@ -160,5 +162,10 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         return result;
+    }
+
+    public float Speed()
+    {
+        return animator.speed;
     }
 }
