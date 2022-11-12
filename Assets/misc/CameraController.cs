@@ -35,9 +35,18 @@ public class CameraController : MonoBehaviour
         float lookAhead = 0f;
         ISet<string> clips = movement.AnimationClips();
 
-        if (clips.Contains("bino") || clips.Contains("tobino")) lookAhead += binoOffset;
-        else if (clips.Contains("move")) lookAhead += moveOffset;
-        if (clips.Contains("aim") || clips.Contains("toaim")) lookAhead += aimOffset;
+        if (clips.Contains("bino") || clips.Contains("tobino"))
+        {
+            lookAhead += binoOffset;
+        }
+        else if (clips.Contains("move"))
+        {
+            lookAhead += moveOffset;
+        }
+        if (clips.Contains("aim") || clips.Contains("toaim") || clips.Contains("fire"))
+        {
+            lookAhead += aimOffset;
+        }
 
         lookAhead = Mathf.Clamp(lookAhead, 0f, maxLookAhead);
 

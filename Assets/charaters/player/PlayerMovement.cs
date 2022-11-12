@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     Animator animator;
     Vector2 movement = Vector2.zero;
     GameSession session;
+    AnimationListener listener;
 
     // animation state
     int stance = 0;
@@ -31,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         session = FindObjectOfType<GameSession>();
+        listener = GetComponent<AnimationListener>();
     }
 
     void Update()
@@ -71,6 +73,15 @@ public class PlayerMovement : MonoBehaviour
 
     void OnAttack(InputValue value)
     {
+        if (value.isPressed)
+        {
+
+            ISet<string> clips = AnimationClips();
+            if (listener.Mode() != AttackMode.NONE && !clips.Contains("bino"))
+            {
+                animator.SetTrigger("attack");
+            }
+        }
     }
 
     void OnLook(InputValue value)
@@ -109,7 +120,6 @@ public class PlayerMovement : MonoBehaviour
     void OnStance(InputValue value)
     {
         bool held = value.Get<float>() >= 0.5f;
-        stance = animator.GetInteger("stance");
 
         if (held && stance == 2)
         {
@@ -143,7 +153,8 @@ public class PlayerMovement : MonoBehaviour
         if (value.isPressed)
         {
             movementModifer = 0.5f;
-        } else
+        }
+        else
         {
             movementModifer = 1f;
         }

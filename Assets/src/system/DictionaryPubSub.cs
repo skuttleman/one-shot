@@ -26,14 +26,16 @@ namespace Game.System
             q.Enqueue(e);
         }
 
-        public int Subscribe<T>(Action<IPubSub.IEvent> action) where T : IPubSub.IEvent
+        public int Subscribe<T>(Action<T> action) where T : IPubSub.IEvent
         {
             int id = ++subId;
             Type t = typeof(T);
             subscribers.Add(id, t);
-            IDictionary<int, Action<IPubSub.IEvent>> dict = actions.ContainsKey(t) ? actions[t] : new Dictionary<int, Action<IPubSub.IEvent>>();
+            IDictionary<int, Action<T>> dict = actions.ContainsKey(t)
+                ? (IDictionary<int, Action<T>>)actions[t]
+                : new Dictionary<int, Action<T>>();
             dict.Add(id, action);
-            actions.Add(t, dict);
+            actions.Add(t, (IDictionary<int, Action<IPubSub.IEvent>>)dict);
 
             return id;
         }
