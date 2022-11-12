@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Game.Utils;
 using System;
+using Game.System;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     float rotationSpeed = 8f;
     float rotationZ = 0f;
     Vector2 movement = Vector2.zero;
+    GameSession session;
 
     // animation state
     bool isMoving = false;
@@ -23,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
+        session = FindObjectOfType<GameSession>();
     }
 
     void Update()
