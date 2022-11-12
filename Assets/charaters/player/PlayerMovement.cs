@@ -17,8 +17,7 @@ public class PlayerMovement : MonoBehaviour
     bool isScoping = false;
     bool isAiming = false;
     bool isLooking = false;
-    bool isCrawling = false;
-    bool isStanding = false;
+    int stance = 0;
 
     void Start()
     {
@@ -36,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
 
     void OnAim(InputValue value)
     {
-        if (!isCrawling || !isMoving)
+        if (stance < 2 || !isMoving)
         {
             isAiming = value.Get<float>() >= 0.5;
             animator.SetBool("isAiming", isAiming);
@@ -58,7 +57,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 moveAmount = value.Get<Vector2>();
 
-        if (!isCrawling || (!isAiming && !isScoping))
+        if (stance < 2 || (!isAiming && !isScoping))
         {
             movement = moveAmount;
             isMoving = movement != Vector2.zero;
@@ -74,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
 
     void OnBinoculars(InputValue value)
     {
-        if (!isCrawling || !isMoving)
+        if (stance < 2 || !isMoving)
         {
             isScoping = value.isPressed;
             animator.SetBool("isScoping", isScoping);
@@ -84,18 +83,15 @@ public class PlayerMovement : MonoBehaviour
     void OnStance(InputValue value)
     {
         bool held = value.Get<float>() >= 0.5f;
-        isStanding = animator.GetBool("isStanding");
-        isCrawling = animator.GetBool("isCrawling");
+        stance = animator.GetInteger("stance");
 
-        if (held && isCrawling)
+        if (held && stance == 2)
         {
-            isStanding = true;
-            isCrawling = false;
+            stance = 0;
         }
         else if (held)
         {
-            isStanding = false;
-            isCrawling = true;
+            stance = 2;
             if (isMoving)
             {
                 isAiming = false;
@@ -104,28 +100,34 @@ public class PlayerMovement : MonoBehaviour
                 animator.SetBool("isScoping", isScoping);
             }
         }
-        else if (!isCrawling && !isStanding)
+        else if (stance == 1)
         {
-            isStanding = true;
-            isCrawling = false;
+            stance = 0;
         }
         else
         {
-            isStanding = false;
-            isCrawling = false;
+            stance = 1;
         }
 
-        animator.SetBool("isStanding", isStanding);
-        animator.SetBool("isCrawling", isCrawling);
+        animator.SetInteger("stance", stance);
     }
 
     void OnMoveModifier(InputValue value)
     {
     }
 
-    public bool IsAiming() => isAiming;
-    public bool IsScoping() => isScoping;
-    public bool IsMoving() => isMoving;
-    public bool IsStanding() => isStanding;
-    public bool IsCrawling() => isCrawling;
+    public ISet<string> AnimationClips()
+    {
+        ISet<string> result = new HashSet<string>();
+        AnimatorClipInfo[] clips =
+            animator.GetCurrentAnimatorClipInfo(gameObject.layer);
+        foreach (AnimatorClipInfo info in clips)
+        {
+            foreach (string clip in info.clip.name.Split("_"))
+            {
+                result.Add(clip);
+            }
+        }
+        return result;
+    }
 }

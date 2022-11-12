@@ -33,9 +33,12 @@ public class CameraController : MonoBehaviour
     void SetOffset()
     {
         float lookAhead = 0f;
-        if (movement.IsScoping()) lookAhead += binoOffset;
-        else if (movement.IsMoving()) lookAhead += moveOffset;
-        if (movement.IsAiming()) lookAhead += aimOffset;
+        ISet<string> clips = movement.AnimationClips();
+
+        if (clips.Contains("bino") || clips.Contains("tobino")) lookAhead += binoOffset;
+        else if (clips.Contains("move")) lookAhead += moveOffset;
+        if (clips.Contains("aim") || clips.Contains("toaim")) lookAhead += aimOffset;
+
         lookAhead = Mathf.Clamp(lookAhead, 0f, maxLookAhead);
 
         offset.m_Offset = Vector3.Lerp(
