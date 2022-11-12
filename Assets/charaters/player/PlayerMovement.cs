@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     bool isAiming = false;
     bool isLooking = false;
     int stance = 0;
+    AttackMode mode = AttackMode.HAND;
 
     void Start()
     {
@@ -129,5 +130,25 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         return result;
+    }
+
+    public void OnAttackWeapon()
+    {
+        mode = AttackMode.WEAPON;
+    }
+
+    public void OnAttackNone()
+    {
+        mode = AttackMode.NONE;
+    }
+
+    public void OnAttackHand()
+    {
+        mode = AttackMode.HAND;
+    }
+
+    private enum AttackMode
+    {
+        NONE, HAND, WEAPON
     }
 }
