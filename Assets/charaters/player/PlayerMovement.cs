@@ -9,18 +9,23 @@ using Game.System;
 public class PlayerMovement : MonoBehaviour
 {
     Animator animator;
-    float rotationSpeed = 8f;
-    float rotationZ = 0f;
     Vector2 movement = Vector2.zero;
     GameSession session;
 
     // animation state
+    int stance = 0;
     bool isMoving = false;
     bool isScoping = false;
     bool isAiming = false;
     bool isLooking = false;
-    int stance = 0;
-    AttackMode mode = AttackMode.HAND;
+
+    // movement modifiers
+    [SerializeField] float walkSpeed = 2.5f;
+    [SerializeField] float crouchSpeed = 1.5f;
+    [SerializeField] float crawlSpeed = 0.75f;
+    [SerializeField] float rotationSpeed = 8f;
+    float rotationZ = 0f;
+    float movementModifer = 1;
 
     void Start()
     {
@@ -30,11 +35,26 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (isMoving && !isLooking) rotationZ = Vectors.Angle(Vector2.zero, movement);
         transform.rotation = Quaternion.Lerp(
             transform.rotation,
             Quaternion.Euler(0, 0, rotationZ),
             rotationSpeed * Time.deltaTime);
-        transform.position += Vectors.Upgrade(movement) * Time.deltaTime;
+
+        float speed = 1f;
+        switch (stance)
+        {
+            case 0:
+                speed = walkSpeed;
+                break;
+            case 1:
+                speed = crouchSpeed;
+                break;
+            case 2:
+                speed = crawlSpeed;
+                break;
+        }
+        transform.position += Vectors.Upgrade(movement) * Time.deltaTime * speed * movementModifer;
     }
 
     void OnAim(InputValue value)
@@ -66,7 +86,6 @@ public class PlayerMovement : MonoBehaviour
             movement = moveAmount;
             isMoving = movement != Vector2.zero;
             animator.SetBool("isMoving", isMoving);
-            if (isMoving) rotationZ = Vectors.Angle(Vector2.zero, movement);
         }
         else if (moveAmount != Vector2.zero)
         {
@@ -118,6 +137,14 @@ public class PlayerMovement : MonoBehaviour
 
     void OnMoveModifier(InputValue value)
     {
+        if (value.isPressed)
+        {
+            movementModifer = 0.5f;
+        } else
+        {
+            movementModifer = 1f;
+        }
+
     }
 
     public ISet<string> AnimationClips()
@@ -133,25 +160,5 @@ public class PlayerMovement : MonoBehaviour
             }
         }
         return result;
-    }
-
-    public void OnAttackWeapon()
-    {
-        mode = AttackMode.WEAPON;
-    }
-
-    public void OnAttackNone()
-    {
-        mode = AttackMode.NONE;
-    }
-
-    public void OnAttackHand()
-    {
-        mode = AttackMode.HAND;
-    }
-
-    private enum AttackMode
-    {
-        NONE, HAND, WEAPON
     }
 }

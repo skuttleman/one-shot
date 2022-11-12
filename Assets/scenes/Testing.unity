@@ -286,7 +286,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &689656702
 GameObject:
@@ -375,7 +375,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1269581574}
   rotateSpeed: 1.75
-  moveOffset: 0.75
+  moveOffset: 0.25
   binoOffset: 3.5
   aimOffset: 1.5
   maxLookAhead: 3.75
@@ -394,6 +394,50 @@ MonoBehaviour:
   m_Offset: {x: 0, y: 0, z: 0}
   m_ApplyAfter: 1
   m_PreserveComposition: 0
+--- !u!1 &704777813
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 704777815}
+  - component: {fileID: 704777814}
+  m_Layer: 0
+  m_Name: GameController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &704777814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 704777813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c9710850415a4a86902ca44c708caf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &704777815
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 704777813}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.80130816, y: -0.42952827, z: 0.106339164}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &727749487
 GameObject:
   m_ObjectHideFlags: 3
@@ -544,7 +588,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &803738655
 BoxCollider:
@@ -636,6 +680,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1011655353809148521, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
   m_PrefabInstance: {fileID: 5844371260744266935}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1605589165 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 384443659378581702, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
+  m_PrefabInstance: {fileID: 5844371260744266935}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1605589171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1605589165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f958653c50ff455b824cb86afe6a516, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1641216413
 GameObject:
   m_ObjectHideFlags: 0
@@ -738,7 +799,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1269581574}
   rotateSpeed: 1.75
-  moveOffset: 0.75
+  moveOffset: 0.1
   binoOffset: 3.5
   aimOffset: 1.5
   maxLookAhead: 2.5
@@ -874,7 +935,7 @@ Transform:
   - {fileID: 2111620413}
   - {fileID: 1641216415}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1915584769
 GameObject:
@@ -959,7 +1020,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1915584773
 MonoBehaviour:
@@ -1097,7 +1158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1269581574}
   rotateSpeed: 1.75
-  moveOffset: 0.75
+  moveOffset: 0.2
   binoOffset: 3.5
   aimOffset: 1.5
   maxLookAhead: 3.2
@@ -1114,7 +1175,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1011655353809148521, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1011655353809148521, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
       propertyPath: m_LocalPosition.x

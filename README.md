@@ -6,6 +6,7 @@ A top-down stealth game for Unity3D.
 
 - Unity v2021.3.12f1
 - AWS CLI tool
+- Babashka
 
 ## Development
 
@@ -14,7 +15,7 @@ A top-down stealth game for Unity3D.
 ```bash
 $ git clone https://github.com/skuttleman/one-shot.git
 $ cd one-shot
-$ aws s3 sync s3://one-shot Assets/resources
+$ bb go s3 pull
 ```
 
 ### Pushing Project
@@ -24,5 +25,5 @@ Make sure to push S3 assets as well.
 ```bash
 $ git commit
 $ git push
-$ aws s3 sync Assets/resources s3://one-shot
+$ bb go s3 push
 ```
