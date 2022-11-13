@@ -10,7 +10,7 @@ namespace Game.Utils
             return new Vector3(vector.x, vector.y, 0f);
         }
 
-        public static float Angle(Vector2 origin, Vector2 position)
+        public static float AngleTo(Vector2 origin, Vector2 position)
         {
             Vector2 difference = origin - position;
             return Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg + 90f;

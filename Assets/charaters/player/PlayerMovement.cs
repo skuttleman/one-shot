@@ -37,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (isMoving && !isLooking) rotationZ = Vectors.Angle(Vector2.zero, movement);
+        if (isMoving && !isLooking) rotationZ = Vectors.AngleTo(Vector2.zero, movement);
         transform.rotation = Quaternion.Lerp(
             transform.rotation,
             Quaternion.Euler(0, 0, rotationZ),
@@ -73,14 +73,9 @@ public class PlayerMovement : MonoBehaviour
 
     void OnAttack(InputValue value)
     {
-        if (value.isPressed)
+        if (value.isPressed && listener.Mode() != AttackMode.NONE)
         {
-
-            ISet<string> clips = AnimationClips();
-            if (listener.Mode() != AttackMode.NONE && !clips.Contains("bino"))
-            {
-                animator.SetTrigger("attack");
-            }
+            animator.SetTrigger("attack");
         }
     }
 
@@ -88,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 rotation = value.Get<Vector2>();
         isLooking = rotation != Vector2.zero;
-        if (isLooking) rotationZ = Vectors.Angle(Vector2.zero, rotation);
+        if (isLooking) rotationZ = Vectors.AngleTo(Vector2.zero, rotation);
     }
 
     void OnMove(InputValue value)
@@ -103,8 +98,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (moveAmount != Vector2.zero)
         {
-            rotationZ = Vectors.Angle(Vector2.zero, moveAmount);
-
+            rotationZ = Vectors.AngleTo(Vector2.zero, moveAmount);
         }
     }
 
