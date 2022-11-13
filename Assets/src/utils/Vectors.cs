@@ -15,5 +15,14 @@ namespace Game.Utils
             Vector2 difference = origin - position;
             return Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg + 90f;
         }
+
+        public static bool NonZero(Vector2 vector) => NonZero(Upgrade(vector));
+
+        public static bool NonZero(Vector3 vector)
+        {
+            return Maths.NonZero(vector.x)
+                || Maths.NonZero(vector.y)
+                || Maths.NonZero(vector.z);
+        }
     }
 }

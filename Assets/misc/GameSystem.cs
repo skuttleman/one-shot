@@ -15,7 +15,10 @@ public class GameSystem
 
     public T Get<T>()
     {
-        return (T)components[typeof(T)];
+        Type key = typeof(T);
+        return components.ContainsKey(key)
+            ? (T)components[key]
+            : default;
     }
 
     public static GameSystem Default()

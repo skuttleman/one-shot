@@ -9,28 +9,24 @@ public class GameSession : MonoBehaviour
 {
     GameSystem system;
 
+    public T Get<T>() => system.Get<T>();
+
     void Awake()
     {
         if (FindObjectsOfType<GameSession>().Length > 1)
         {
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            DontDestroyOnLoad(gameObject);
-        }
+        DontDestroyOnLoad(gameObject);
+        system = GameSystem.Default();
     }
 
     void Start()
     {
-        system = GameSystem.Default();
         StartCoroutine(UpdateComponents());
     }
 
-    public T Get<T>()
-    {
-        return system.Get<T>();
-    }
 
     IEnumerator UpdateComponents()
     {

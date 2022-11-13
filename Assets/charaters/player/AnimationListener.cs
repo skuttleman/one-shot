@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.Utils;
 using UnityEngine;
 
 public class AnimationListener : MonoBehaviour
 {
     AttackMode mode = AttackMode.HAND;
-    PlayerMovement movement;
+    Animator animator;
 
     void Start()
     {
-        movement = gameObject.GetComponent<PlayerMovement>();
+        animator = GetComponent<Animator>();
     }
 
     public AttackMode Mode() => mode;
@@ -33,6 +34,21 @@ public class AnimationListener : MonoBehaviour
     {
     }
 
+    public ISet<string> AnimationClips()
+    {
+        return Colls.Reduce(
+            animator.GetCurrentAnimatorClipInfo(gameObject.layer),
+            (acc, item) => Colls.Reduce(
+                item.clip.name.Split("_"),
+                (acc, name) => Colls.Add(acc, name),
+                acc),
+            new HashSet<string>());
+    }
+
+    public float Speed()
+    {
+        return animator.speed;
+    }
 }
 
 public enum AttackMode
