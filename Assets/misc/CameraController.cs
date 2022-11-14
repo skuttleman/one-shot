@@ -17,12 +17,12 @@ public class CameraController : MonoBehaviour
     [SerializeField] float maxLookAhead;
 
     CinemachineCameraOffset offset;
-    AnimationListener anim;
+    PlayerAnimationStateListener anim;
 
     void Start()
     {
         offset = GetComponent<CinemachineCameraOffset>();
-        anim = target.gameObject.GetComponent<AnimationListener>();
+        anim = target.gameObject.GetComponent<PlayerAnimationStateListener>();
     }
 
     void Update()
@@ -33,20 +33,9 @@ public class CameraController : MonoBehaviour
     void SetOffset()
     {
         float lookAhead = 0f;
-        ISet<string> clips = anim.AnimationClips();
-
-        if (Sets.ContainsAny(clips, "bino", "tobino"))
-        {
-            lookAhead += binoOffset;
-        }
-        else if (clips.Contains("move"))
-        {
-            lookAhead += moveOffset;
-        }
-        if (Sets.ContainsAny(clips, "aim", "toaim", "fire"))
-        {
-            lookAhead += aimOffset;
-        }
+        if (anim.IsScoping()) lookAhead += binoOffset;
+        else if (anim.IsMoving()) lookAhead += moveOffset;
+        if (anim.IsAiming()) lookAhead += aimOffset;
 
         lookAhead = Mathf.Clamp(lookAhead, 0f, maxLookAhead);
 

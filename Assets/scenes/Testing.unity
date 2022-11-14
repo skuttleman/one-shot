@@ -219,8 +219,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 15.625, y: 15.625, z: 3.6811552}
-  m_Center: {x: 0, y: 0, z: 1.7405775}
+  m_Size: {x: 15.625, y: 15.625, z: 1}
+  m_Center: {x: 0, y: 0, z: -0.5}
 --- !u!212 &275961728
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -281,7 +281,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 275961726}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: -3, z: -1}
+  m_LocalPosition: {x: -2, y: -3, z: 1}
   m_LocalScale: {x: 0.1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -583,7 +583,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 803738651}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1152,9 +1152,41 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 690747010, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
+      propertyPath: m_Size.z
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 690747010, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
+      propertyPath: m_Center.z
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 786454459, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
+      propertyPath: m_Size.z
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 786454459, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
+      propertyPath: m_Center.z
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1101689740, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
+      propertyPath: m_Size.z
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1101689740, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
+      propertyPath: m_Center.z
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 384443659378581702, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 384443659378581702, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 405131403333894136, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1011655353809148521, guid: 5783c7820f64249c5a1acb10c2783853, type: 3}
       propertyPath: m_RootOrder

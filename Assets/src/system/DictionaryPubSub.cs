@@ -17,7 +17,7 @@ namespace Game.System
 
         public void Tick()
         {
-            if (q.Count > 0) PublishEvent(q.Dequeue());
+            while (q.Count > 0) PublishEvent(q.Dequeue());
         }
 
         public DictionaryPubSub()

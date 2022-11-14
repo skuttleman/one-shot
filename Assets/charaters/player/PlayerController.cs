@@ -10,8 +10,7 @@ public class PlayerController : MonoBehaviour
 {
     Animator animator;
     Vector2 movement = Vector2.zero;
-    AnimationListener listener;
-    ISet<string> clips;
+    PlayerAnimationStateListener listener;
 
     // movement modifiers
     [SerializeField] float walkSpeed = 2.5f;
@@ -24,12 +23,11 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         animator = GetComponent<Animator>();
-        listener = GetComponent<AnimationListener>();
+        listener = GetComponent<PlayerAnimationStateListener>();
     }
 
     void Update()
     {
-        clips = listener.AnimationClips();
         RotatePlayer();
         MovePlayer();
     }
@@ -50,7 +48,10 @@ public class PlayerController : MonoBehaviour
 
             if (IsAiming()) speed *= 0.9f;
             else if (IsScoping()) speed *= 0.6f;
-            animator.speed = Mathf.Max(Mathf.Abs(movement.x), Mathf.Abs(movement.y)) * speed;
+            float movementSpeed = Mathf.Max(
+                Mathf.Abs(movement.x),
+                Mathf.Abs(movement.y));
+            animator.speed = movementSpeed * speed;
             transform.position += speed * Time.deltaTime * Vectors.Upgrade(movement);
         }
     }
@@ -89,16 +90,16 @@ public class PlayerController : MonoBehaviour
     public void Stance(float amount)
     {
         bool held = amount >= 0.35f;
-        int nextStance;
+        PlayerStance nextStance;
 
-        if (held && IsCrawling()) nextStance = 0;
-        else if (held) nextStance = 2;
-        else if (IsCrouching()) nextStance = 0;
-        else nextStance = 1;
+        if (held && IsCrawling()) nextStance = PlayerStance.STAND;
+        else if (held) nextStance = PlayerStance.CRAWL;
+        else if (IsCrouching()) nextStance = PlayerStance.STAND;
+        else nextStance = PlayerStance.CROUCH;
 
-        if (nextStance != 2 || (!IsAiming() && !IsScoping()))
+        if (nextStance != PlayerStance.STAND || (!IsAiming() && !IsScoping()))
         {
-            animator.SetInteger("stance", nextStance);
+            animator.SetInteger("stance", (int) nextStance);
         }
     }
 
@@ -115,10 +116,10 @@ public class PlayerController : MonoBehaviour
         return walkSpeed;
     }
 
-    bool IsStanding() => clips.Contains("stand");
-    bool IsCrouching() => clips.Contains("crouch");
-    bool IsCrawling() => clips.Contains("crawl");
-    bool IsAiming  () => Sets.ContainsAny(clips, "aim", "toaim");
-    bool IsScoping () => Sets.ContainsAny(clips, "bino", "tobino");
-    bool IsMovable () => !IsCrawling() || (!IsAiming() && !IsScoping());
+    bool IsStanding() => listener.Stance() == PlayerStance.STAND;
+    bool IsCrouching() => listener.Stance() == PlayerStance.CROUCH;
+    bool IsCrawling() => listener.Stance() == PlayerStance.CRAWL;
+    bool IsAiming() => listener.IsAiming();
+    bool IsScoping() => listener.IsScoping();
+    bool IsMovable() => !IsCrawling() || (!IsAiming() && !IsScoping());
 }

@@ -51,13 +51,19 @@ namespace Game.Utils
             return this;
         }
 
+        public MultiMethod<T, U, R> AddMethod(U dispatchVal, Action<T> action)
+        {
+            dict[dispatchVal] = input => { action(input); return default; };
+            return this;
+        }
+
         public MultiMethod<T, U, R> RemoveMethod(U dispatchVal)
         {
             dict.Remove(dispatchVal);
             return this;
         }
 
-        public Func<T, R> Fn()
+        public Func<T, R> Func()
         {
             return input =>
             {
@@ -67,47 +73,10 @@ namespace Game.Utils
                     : defaultVal;
             };
         }
-    }
-
-    public class MultiAction<T, U>
-    {
-        readonly IDictionary<U, Action<T>> dict;
-        readonly Func<T, U> dispatchFn;
-
-        public static MultiAction<T, U> Over(Func<T, U> dispatchFn)
-        {
-            IDictionary<U, Action<T>> dict = new Dictionary<U, Action<T>>();
-            return new MultiAction<T, U>(dict, dispatchFn);
-        }
-
-        private MultiAction(IDictionary<U, Action<T>> dict, Func<T, U> dispatchFn)
-        {
-            this.dict = dict;
-            this.dispatchFn = dispatchFn;
-        }
-
-        public MultiAction<T, U> AddMethod(U dispatchVal, Action<T> fn)
-        {
-            dict[dispatchVal] = fn;
-            return this;
-        }
-
-        public MultiAction<T, U> RemoveMethod(U dispatchVal)
-        {
-            dict.Remove(dispatchVal);
-            return this;
-        }
 
         public Action<T> Action()
         {
-            return input =>
-            {
-                U dispatchVal = dispatchFn(input);
-                if (dict.ContainsKey(dispatchVal))
-                {
-                    dict[dispatchVal](input);
-                }
-            };
+            return input => Func()(input);
         }
     }
 }
