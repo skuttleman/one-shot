@@ -5,7 +5,7 @@ using Game.System;
 using Game.System.Events.Player;
 using UnityEngine;
 
-public class CollisionListener : Monos.Subcriber<StanceChange>
+public class CollisionListener : Monos.Subscriber<StanceChange>
 {
     [SerializeField] StanceChange.Stance stance;
     BoxCollider collide;

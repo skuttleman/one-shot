@@ -34,6 +34,12 @@ namespace Game.System
             return this;
         }
 
+        public IPubSub PublishSync<T>(T e) where T : IEvent
+        {
+            PublishEvent(e);
+            return this;
+        }
+
         public long Subscribe<T>(Action<T> action) where T : IEvent
         {
             long id = ++subId;
@@ -41,8 +47,8 @@ namespace Game.System
             IDictionary<long, Action<IEvent>> dict = actions.ContainsKey(t)
                 ? actions[t]
                 : new Dictionary<long, Action<IEvent>>();
-            subscribers.Add(id, t);
-            dict.Add(id, e => action((T)e));
+            subscribers[id] = t;
+            dict[id] = e => action((T)e);
             actions[t] = dict;
 
             return id;

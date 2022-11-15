@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using Cinemachine;
 using Game.System.Events.Player;
 using Game.Utils;
 using UnityEngine;
 
-public class CameraController : Monos.Subcriber<ScopeChange, MovementSpeedChange, AttackModeChange>
+public class CameraController : Monos.Subscriber<
+    ScopeChange, MovementSpeedChange, AttackModeChange>
 {
     [Header("Player")]
     [SerializeField] Transform target;
@@ -26,7 +24,6 @@ public class CameraController : Monos.Subcriber<ScopeChange, MovementSpeedChange
     {
         Init();
         offset = GetComponent<CinemachineCameraOffset>();
-        Debug.Log("why no component?" + offset == null);
     }
 
     void Update()

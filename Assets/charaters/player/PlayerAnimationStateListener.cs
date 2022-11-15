@@ -22,9 +22,10 @@ public class PlayerAnimationStateListener : MonoBehaviour
         => pubsub.Publish(new StanceChange(stance));
     public void OnAttackMode(AttackModeChange.AttackMode mode) =>
         pubsub.Publish(new AttackModeChange(mode));
-    public void OnMotionChange(bool isMoving) =>
-        pubsub.Publish(new MovementSpeedChange(isMoving ? animator.speed : 0f));
-    public void OnScopeChange(bool isScoping) =>
-        pubsub.Publish(new ScopeChange(isScoping));
+    public void OnMotionMove() =>
+        pubsub.Publish(new MovementSpeedChange(animator.speed));
+    public void OnMotionStop() => pubsub.Publish(new MovementSpeedChange(0f));
+    public void OnScopeOn() => pubsub.Publish(new ScopeChange(true));
+    public void OnScopeOff() => pubsub.Publish(new ScopeChange(false));
     public void OnStep() { }
 }

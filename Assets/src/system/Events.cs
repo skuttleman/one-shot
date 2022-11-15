@@ -36,5 +36,47 @@ namespace Game.System.Events
             public readonly bool isScoping;
             public ScopeChange(bool isScoping) => this.isScoping = isScoping;
         }
+
+        public class InputAim : IEvent
+        {
+            public readonly bool isAiming;
+            public InputAim(bool isAiming) => this.isAiming = isAiming;
+        }
+
+        public class InputAttack : IEvent
+        {
+            public readonly bool isAttacking;
+            public InputAttack(bool isAttacking) => this.isAttacking = isAttacking;
+        }
+
+        public class InputLook : IEvent
+        {
+            public readonly Vector2 direction;
+            public InputLook(Vector2 direction) => this.direction = direction;
+        }
+
+        public class InputMove : IEvent
+        {
+            public readonly Vector2 direction;
+            public InputMove(Vector2 direction) => this.direction = direction;
+        }
+
+        public class InputScope : IEvent
+        {
+            public readonly bool isScoping;
+            public InputScope(bool isScoping) => this.isScoping = isScoping;
+        }
+
+        public class InputStance : IEvent
+        {
+            public readonly float value;
+            public InputStance(float value) => this.value = value;
+        }
+
+        public class InputMoveModified : IEvent
+        {
+            public readonly bool isModified;
+            public InputMoveModified(bool isModified) => this.isModified = isModified;
+        }
     }
 }

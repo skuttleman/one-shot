@@ -143,7 +143,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: crouch_move 0
+  m_Name: crawl_move
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -396,7 +396,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: crouch_punch 0
+  m_Name: crawl_punch
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -548,7 +548,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: crouch_fire 0
+  m_Name: crawl_fire
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -836,7 +836,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: crouch_idle 0
+  m_Name: crawl_idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1751,7 +1751,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: crouch_idle_aim 0
+  m_Name: crawl_idle_aim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -1805,7 +1805,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: crouch_toaim 0
+  m_Name: crouch_toaim
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -2404,7 +2404,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: crouch_tobino 0
+  m_Name: crawl_tobino
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -2685,7 +2685,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: crouch_idle_bino 0
+  m_Name: crawl_idle_bino
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
