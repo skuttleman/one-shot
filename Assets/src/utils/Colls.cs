@@ -7,24 +7,30 @@ namespace Game.Utils
     {
         public static void ForEach<T>(IEnumerable<T> coll, Action<T> action)
         {
-            foreach (T item in coll) action(item);
+            if (coll != null) foreach (T item in coll) action(item);
         }
 
         public static U Reduce<T, U>(IEnumerable<T> coll, Func<U, T, U> reducer, U init)
         {
             U result = init;
-            foreach (T item in coll) result = reducer(result, item);
+            if (coll != null)
+            {
+                foreach (T item in coll) result = reducer(result, item);
+            }
             return result;
         }
 
         public static U ReduceUntil<T, U>(IEnumerable<T> coll, Func<U, T, Reduction<U>> reducer, U init)
         {
             U result = init;
-            foreach (T item in coll)
+            if (coll != null)
             {
-                Reduction<U> next = reducer(result, item);
-                result = next.Get();
-                if (next.IsReduced()) return result;
+                foreach (T item in coll)
+                {
+                    Reduction<U> next = reducer(result, item);
+                    result = next.Get();
+                    if (next.IsReduced()) return result;
+                }
             }
             return result;
         }

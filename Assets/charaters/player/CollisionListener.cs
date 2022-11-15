@@ -1,22 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Game.System;
+using Game.System.Events.Player;
 using UnityEngine;
 
-public class CollisionListener : MonoBehaviour
+public class CollisionListener : Monos.Subcriber<StanceChange>
 {
-    [SerializeField] PlayerStance stance;
-    PlayerAnimationStateListener listener;
+    [SerializeField] StanceChange.Stance stance;
     BoxCollider collide;
 
     void Start()
     {
-        listener = FindObjectOfType<PlayerAnimationStateListener>();
+        Init();
         collide = GetComponent<BoxCollider>();
     }
 
+    public override void OnEvent(StanceChange e) =>
+        collide.enabled = e.stance == stance;
 
-    void Update()
-    {
-        collide.enabled = listener.Stance() == stance;
-    }
+    void OnDestroy() => Destroy();
 }

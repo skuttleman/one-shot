@@ -5,12 +5,23 @@ using Game.System;
 using Game.Utils;
 using UnityEngine.InputSystem;
 using System;
+using Game.System.Events.Player;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Monos.Subcriber<
+        StanceChange, AttackModeChange,
+        MovementSpeedChange, ScopeChange
+    >
 {
     Animator animator;
     Vector2 movement = Vector2.zero;
     PlayerAnimationStateListener listener;
+
+    // animation state
+    AttackModeChange.AttackMode mode;
+    StanceChange.Stance stance;
+    bool isMoving;
+    bool isAiming;
+    bool isScoping;
 
     // movement modifiers
     [SerializeField] float walkSpeed = 2.5f;
@@ -46,8 +57,8 @@ public class PlayerController : MonoBehaviour
         {
             float speed = movementModifer * StanceSpeed();
 
-            if (IsAiming()) speed *= 0.9f;
-            else if (IsScoping()) speed *= 0.6f;
+            if (isAiming) speed *= 0.9f;
+            else if (isScoping) speed *= 0.6f;
             float movementSpeed = Mathf.Max(
                 Mathf.Abs(movement.x),
                 Mathf.Abs(movement.y));
@@ -63,7 +74,7 @@ public class PlayerController : MonoBehaviour
 
     public void Attack(bool isPressed)
     {
-        if (isPressed && listener.Mode() != AttackMode.NONE)
+        if (isPressed && mode != AttackModeChange.AttackMode.NONE)
         {
             animator.SetTrigger("attack");
         }
@@ -71,7 +82,8 @@ public class PlayerController : MonoBehaviour
 
     public void Look(Vector2 vector)
     {
-        if (Vectors.NonZero(vector)) rotationZ = Vectors.AngleTo(Vector2.zero, vector);
+        if (Vectors.NonZero(vector))
+            rotationZ = Vectors.AngleTo(Vector2.zero, vector);
     }
 
     public void Move(Vector2 vector)
@@ -90,16 +102,19 @@ public class PlayerController : MonoBehaviour
     public void Stance(float amount)
     {
         bool held = amount >= 0.35f;
-        PlayerStance nextStance;
+        StanceChange.Stance nextStance;
 
-        if (held && IsCrawling()) nextStance = PlayerStance.STAND;
-        else if (held) nextStance = PlayerStance.CRAWL;
-        else if (IsCrouching()) nextStance = PlayerStance.STAND;
-        else nextStance = PlayerStance.CROUCH;
+        if (held && IsCrawling()) nextStance = StanceChange.Stance.STANDING;
+        else if (held) nextStance = StanceChange.Stance.CRAWLING;
+        else if (IsCrouching()) nextStance = StanceChange.Stance.STANDING;
+        else nextStance = StanceChange.Stance.CROUCHING;
 
-        if (nextStance != PlayerStance.STAND || (!IsAiming() && !IsScoping()))
+        if (nextStance != StanceChange.Stance.CRAWLING
+            || (!isAiming && !isScoping)
+            || !isMoving)
         {
-            animator.SetInteger("stance", (int) nextStance);
+            stance = nextStance;
+            animator.SetInteger("stance", (int)stance);
         }
     }
 
@@ -116,10 +131,11 @@ public class PlayerController : MonoBehaviour
         return walkSpeed;
     }
 
-    bool IsStanding() => listener.Stance() == PlayerStance.STAND;
-    bool IsCrouching() => listener.Stance() == PlayerStance.CROUCH;
-    bool IsCrawling() => listener.Stance() == PlayerStance.CRAWL;
-    bool IsAiming() => listener.IsAiming();
-    bool IsScoping() => listener.IsScoping();
-    bool IsMovable() => !IsCrawling() || (!IsAiming() && !IsScoping());
+    bool IsCrawling() => stance == StanceChange.Stance.CRAWLING;
+    bool IsCrouching() => stance == StanceChange.Stance.CROUCHING;
+    bool IsMovable() => !IsCrawling() || (!isAiming && !isScoping);
+    public override void OnEvent(ScopeChange e) => isScoping = e.isScoping;
+    public override void OnEvent(StanceChange e) => stance = e.stance;
+    public override void OnEvent(AttackModeChange e) => mode = e.mode;
+    public override void OnEvent(MovementSpeedChange e) => isMoving = Maths.NonZero(e.speed);
 }

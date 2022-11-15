@@ -4,14 +4,15 @@ using Game.System;
 using System;
 using System.Collections.Generic;
 using Game.Utils;
+using Game.System.Events;
 
 namespace Game.System
 {
     public class DictionaryPubSub : IComponent, IPubSub
     {
-        IDictionary<Type, IDictionary<long, Action<IPubSub.IEvent>>> actions;
+        IDictionary<Type, IDictionary<long, Action<IEvent>>> actions;
         IDictionary<long, Type> subscribers;
-        Queue<IPubSub.IEvent> q;
+        readonly Queue<IEvent> q;
 
         long subId = 0;
 
@@ -22,47 +23,44 @@ namespace Game.System
 
         public DictionaryPubSub()
         {
-            actions = new Dictionary<Type, IDictionary<long, Action<IPubSub.IEvent>>>();
+            actions = new Dictionary<Type, IDictionary<long, Action<IEvent>>>();
             subscribers = new Dictionary<long, Type>();
-            q = new Queue<IPubSub.IEvent>();
+            q = new Queue<IEvent>();
         }
 
-        public void Publish<T>(T e) where T : IPubSub.IEvent
+        public IPubSub Publish<T>(T e) where T : IEvent
         {
             q.Enqueue(e);
+            return this;
         }
 
-        public void PublishSync<T>(T e) where T : IPubSub.IEvent
-        {
-            PublishEvent(e);
-        }
-
-        public long Subscribe<T>(Action<T> action) where T : IPubSub.IEvent
+        public long Subscribe<T>(Action<T> action) where T : IEvent
         {
             long id = ++subId;
             Type t = typeof(T);
-            IDictionary<long, Action<IPubSub.IEvent>> dict = actions.ContainsKey(t)
+            IDictionary<long, Action<IEvent>> dict = actions.ContainsKey(t)
                 ? actions[t]
-                : new Dictionary<long, Action<IPubSub.IEvent>>();
+                : new Dictionary<long, Action<IEvent>>();
             subscribers.Add(id, t);
-            dict.Add(id, (IPubSub.IEvent e) => action((T)e));
-            actions.Add(t, dict);
+            dict.Add(id, e => action((T)e));
+            actions[t] = dict;
 
             return id;
         }
 
-        public void Unsubscribe(long subscription)
+        public IPubSub Unsubscribe(long subscription)
         {
             Type t = subscribers.ContainsKey(subscription) ? subscribers[subscription] : null;
             if (t != null)
             {
-                IDictionary<long, Action<IPubSub.IEvent>> dict = actions[t];
+                IDictionary<long, Action<IEvent>> dict = actions[t];
                 dict.Remove(subscription);
                 subscribers.Remove(subscription);
             }
+            return this;
         }
 
-        void PublishEvent(IPubSub.IEvent e)
+        void PublishEvent(IEvent e)
         {
             Colls.ForEach(actions[e.GetType()], entry => entry.Value(e));
         }
