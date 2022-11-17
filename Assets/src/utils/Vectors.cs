@@ -5,16 +5,19 @@ namespace Game.Utils
 {
     public static class Vectors
     {
-        public static Vector3 Upgrade(Vector2 vector)
+        public static Vector3 Upgrade(Vector2 vector) =>
+            new(vector.x, vector.y, 0f);
+        public static Vector2 Downgrade(Vector3 vector) =>
+            new(vector.x, vector.y);
+
+        public static float AngleTo(Vector2 direction)
         {
-            return new Vector3(vector.x, vector.y, 0f);
+            Vector2 dir = direction.normalized;
+            return Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 90f;
         }
 
-        public static float AngleTo(Vector2 origin, Vector2 position)
-        {
-            Vector2 difference = origin - position;
-            return Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg + 90f;
-        }
+        public static float AngleTo(Vector2 origin, Vector2 position) =>
+            AngleTo(origin - position);
 
         public static bool NonZero(Vector2 vector) => NonZero(Upgrade(vector));
 
@@ -24,5 +27,14 @@ namespace Game.Utils
                 || Maths.NonZero(vector.y)
                 || Maths.NonZero(vector.z);
         }
+
+        public static Vector3 ToVector3(float angle)
+        {
+            float angleRad = angle * (Mathf.PI / 180f);
+            return new Vector3(Mathf.Cos(angleRad), Mathf.Sin(angleRad));
+        }
+
+        public static Vector2 ToVector2(float angle) =>
+            Downgrade(ToVector3(angle));
     }
 }
