@@ -43,6 +43,7 @@ public class GameSession : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
         system = GameSystem.Default();
+        taggedObjects = new Dictionary<string, ISet<GameObject>>();
     }
 
     void Start()
