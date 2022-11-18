@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System;
-using System.Collections.Generic;
 using Game.System;
-using Game.System.Events.Player;
 using Game.System.Events;
 using Game.Utils;
 

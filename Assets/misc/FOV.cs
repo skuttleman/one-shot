@@ -1,20 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using Game.Utils;
+using System.Collections.Generic;
 
 public class FOV : MonoBehaviour
 {
-    [SerializeField] private LayerMask layerMask;
+    [SerializeField] LayerMask layerMask;
     [SerializeField] float fov = 300f;
     [SerializeField] float viewDistance = 4f;
     [SerializeField] float startingAngle = 0f;
-    [SerializeField] int rayCount = 10;
+    [SerializeField] GameObject player;
+    readonly int rayCount = 50;
     Mesh mesh;
-    Vector3 origin = Vector3.zero;
 
     void Start()
     {
@@ -24,31 +20,28 @@ public class FOV : MonoBehaviour
 
     void LateUpdate()
     {
-        float angle = startingAngle;
+        float angle = startingAngle + player.transform.rotation.eulerAngles.z;
         float angleIncrease = fov / rayCount;
 
         Vector3[] vertices = new Vector3[rayCount + 1 + 1];
         Vector2[] uv = new Vector2[vertices.Length];
         int[] triangles = new int[rayCount * 3];
 
-        vertices[0] = origin;
+        vertices[0] = player.transform.position;
 
         int vertexIndex = 1;
         int triangleIndex = 0;
         for (int i = 0; i <= rayCount; i++)
         {
             Vector3 vertex;
-            RaycastHit2D raycastHit2D = Physics2D.Raycast(origin, Vectors.ToVector3(angle), viewDistance, layerMask);
-            if (raycastHit2D.collider == null)
+            Vector3 direction = Vectors.ToVector3(angle);
+            bool isHit = Physics.Raycast(
+                vertices[0], direction, out RaycastHit hit, viewDistance, layerMask);
+            if (isHit)
             {
-                // No hit
-                vertex = origin + Vectors.ToVector3(angle) * viewDistance;
+                vertex = hit.point;
             }
-            else
-            {
-                // Hit object
-                vertex = raycastHit2D.point;
-            }
+            else vertex = vertices[0] + direction * viewDistance;
             vertices[vertexIndex] = vertex;
 
             if (i > 0)
@@ -63,27 +56,10 @@ public class FOV : MonoBehaviour
             vertexIndex++;
             angle -= angleIncrease;
         }
-
-
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.triangles = triangles;
-        mesh.bounds = new Bounds(origin, Vector3.one * 1000f);
-    }
-
-    public void SetOrigin(Vector3 origin)
-    {
-        this.origin = origin;
-    }
-
-    public void SetAimDirection(Vector3 aimDirection)
-    {
-        startingAngle = Vectors.AngleTo(aimDirection) + fov / 2f;
-    }
-
-    public void SetFoV(float fov)
-    {
-        this.fov = fov;
+        mesh.bounds = new Bounds(vertices[0], Vector3.one * 1000f);
     }
 
     public void SetViewDistance(float viewDistance)
