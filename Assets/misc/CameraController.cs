@@ -5,16 +5,16 @@ using UnityEngine;
 public class CameraController : Monos.Subscriber<
     ScopeChange, MovementSpeedChange, AttackModeChange>
 {
-    [Header("Player")]
-    [SerializeField] Transform target;
-
     [Header("Camera Config")]
     [SerializeField] float rotateSpeed;
     [SerializeField] float moveOffset;
     [SerializeField] float binoOffset;
     [SerializeField] float aimOffset;
     [SerializeField] float maxLookAhead;
+    [SerializeField] string targetTag;
 
+    GameSession session;
+    Transform target;
     CinemachineCameraOffset offset;
     bool isScoping;
     bool isMoving;
@@ -24,6 +24,8 @@ public class CameraController : Monos.Subscriber<
     {
         Init();
         offset = GetComponent<CinemachineCameraOffset>();
+        session = FindObjectOfType<GameSession>();
+        target = session.GetTaggedObject(targetTag).transform;
     }
 
     void Update()

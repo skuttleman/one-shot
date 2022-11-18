@@ -4,12 +4,35 @@ using Game.System;
 using System;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using Game.Utils;
 
 public class GameSession : MonoBehaviour
 {
+    IDictionary<string, ISet<GameObject>> taggedObjects;
     GameSystem system;
 
+    public void RegisterTags(IEnumerable<string> tags, GameObject obj)
+    {
+        Colls.ForEach(tags, tag =>
+        {
+            ISet<GameObject> objects = new HashSet<GameObject>();
+            if (taggedObjects.ContainsKey(tag)) objects = taggedObjects[tag];
+            else taggedObjects[tag] = objects;
+            if (!objects.Contains(obj)) objects.Add(obj);
+        });
+    }
+
+    public GameObject GetTaggedObject(string tag)
+    {
+        ISet<GameObject> objects = GetTaggedObjects(tag);
+        if (objects.Count > 1)
+            throw new InvalidOperationException("More than one item found for tag: " + tag);
+        return Colls.First(objects);
+    }
+
     public T Get<T>() => system.Get<T>();
+    public ISet<GameObject> GetTaggedObjects(string tag) => Colls.Get(taggedObjects, tag);
+    public GameObject GetPlayer() => GetTaggedObject("player");
 
     void Awake()
     {

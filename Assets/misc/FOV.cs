@@ -8,7 +8,10 @@ public class FOV : MonoBehaviour
     [SerializeField] float fov = 300f;
     [SerializeField] float viewDistance = 4f;
     [SerializeField] float startingAngle = 0f;
-    [SerializeField] GameObject player;
+    [SerializeField] string targetTag;
+
+    GameSession session;
+    Transform target;
     readonly int rayCount = 50;
     Mesh mesh;
 
@@ -16,18 +19,20 @@ public class FOV : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
+        session = FindObjectOfType<GameSession>();
+        target = session.GetTaggedObject(targetTag).transform;
     }
 
     void LateUpdate()
     {
-        float angle = startingAngle + player.transform.rotation.eulerAngles.z;
+        float angle = startingAngle + target.rotation.eulerAngles.z;
         float angleIncrease = fov / rayCount;
 
         Vector3[] vertices = new Vector3[rayCount + 1 + 1];
         Vector2[] uv = new Vector2[vertices.Length];
         int[] triangles = new int[rayCount * 3];
 
-        vertices[0] = player.transform.position;
+        vertices[0] = target.position;
 
         int vertexIndex = 1;
         int triangleIndex = 0;
@@ -60,10 +65,5 @@ public class FOV : MonoBehaviour
         mesh.uv = uv;
         mesh.triangles = triangles;
         mesh.bounds = new Bounds(vertices[0], Vector3.one * 1000f);
-    }
-
-    public void SetViewDistance(float viewDistance)
-    {
-        this.viewDistance = viewDistance;
     }
 }
