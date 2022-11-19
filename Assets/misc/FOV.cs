@@ -1,5 +1,8 @@
 using UnityEngine;
 using Game.Utils;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class FOV : MonoBehaviour
 {
@@ -11,7 +14,7 @@ public class FOV : MonoBehaviour
 
     GameSession session;
     Transform target;
-    readonly int rayCount = 50;
+    readonly int rayCount = 40;
     Mesh mesh;
 
     void Start()
@@ -38,29 +41,29 @@ public class FOV : MonoBehaviour
 
         vertices[0] = target.position;
 
-        int vertexIndex = 1;
-        int triangleIndex = 0;
-        foreach (int i in Colls.Range(rayCount + 1))
-        {
-            Vector3 direction = Vectors.ToVector3(angle);
-            bool isHit = Physics.Raycast(
-                vertices[0], direction, out RaycastHit hit, viewDistance, layerMask);
+        Iterator<(int, int)>
+            .Of((1, -3),
+                ((int vertexIdx, int triangleIdx) t) =>
+                    (t.vertexIdx + 1, t.triangleIdx + 3))
+            .Take(rayCount)
+            .ForEach(((int vertexIdx, int triangleIdx) t) => {
+                Vector3 direction = Vectors.ToVector3(angle);
+                bool isHit = Physics.Raycast(
+                    vertices[0], direction, out RaycastHit hit, viewDistance, layerMask);
 
-            if (isHit) vertices[vertexIndex] = hit.point;
-            else vertices[vertexIndex] = vertices[0] + direction * viewDistance;
+                if (isHit) vertices[t.vertexIdx] = hit.point;
+                else vertices[t.vertexIdx] = vertices[0] + direction * viewDistance;
 
-            if (i > 0)
-            {
-                triangles[triangleIndex + 0] = 0;
-                triangles[triangleIndex + 1] = vertexIndex - 1;
-                triangles[triangleIndex + 2] = vertexIndex;
+                if (t.triangleIdx >= 0)
+                {
+                    triangles[t.triangleIdx] = 0;
+                    triangles[t.triangleIdx + 1] = t.vertexIdx - 1;
+                    triangles[t.triangleIdx + 2] = t.vertexIdx;
+                }
 
-                triangleIndex += 3;
-            }
+                angle -= angleIncrease;
+            });
 
-            vertexIndex++;
-            angle -= angleIncrease;
-        }
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.triangles = triangles;
