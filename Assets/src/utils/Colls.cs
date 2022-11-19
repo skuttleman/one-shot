@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Game.Utils
@@ -35,28 +36,25 @@ namespace Game.Utils
             return result;
         }
 
-        public static ICollection<U> Map<T, U>(IEnumerable<T> coll, Func<T, U> fn)
-        {
-            return Reduce(
-                coll,
-                (acc, item) => { acc.Add(fn(item)); return acc; },
-                new List<U>());
-        }
+        public static IEnumerable<U> MapCat<T, U>(IEnumerable<T> coll, Func<T, IEnumerable<U>> fn) =>
+            new Expander<T, U>(coll, fn);
 
-        public static ICollection<U> Map<T, U>(IEnumerable<T> coll, IDictionary<T, U> dict) =>
+        public static IEnumerable<U> Map<T, U>(IEnumerable<T> coll, Func<T, U> fn) =>
+            new Expander<T, U>(coll, input => new U[] { fn(input) });
+
+        public static IEnumerable<U> Map<T, U>(IEnumerable<T> coll, IDictionary<T, U> dict) =>
             Map(coll, Fn(dict));
 
-        public static ICollection<T> Filter<T>(IEnumerable<T> coll, Predicate<T> pred)
+        public static IEnumerable<T> Filter<T>(IEnumerable<T> coll, Predicate<T> pred)
         {
-            return Reduce(
+            return new Expander<T, T>(
                 coll,
-                (acc, item) => pred(item) ? Add(acc, item) : acc,
-                new List<T>());
+                item => pred(item) ? new T[] { item } : new T[] { });
         }
 
-        public static ICollection<T> Filter<T>(IEnumerable<T> coll, ISet<T> set) =>
+        public static IEnumerable<T> Filter<T>(IEnumerable<T> coll, ISet<T> set) =>
             Filter(coll, Pred(set));
-        public static ICollection<T> Filter<T, U>(IEnumerable<T> coll, IDictionary<T, U> dict) =>
+        public static IEnumerable<T> Filter<T, U>(IEnumerable<T> coll, IDictionary<T, U> dict) =>
             Filter(coll, Pred(dict));
         public static T Find<T>(IEnumerable<T> coll, Predicate<T> pred) =>
             Find(coll, pred, default);
@@ -75,16 +73,20 @@ namespace Game.Utils
         {
             if (coll != null)
             {
-                IList<T> result = new List<T>();
-                bool toBeReturned = false;
-                foreach(T item in coll)
-                {
-                    if (toBeReturned) result.Add(item);
-                    toBeReturned = true;
-                }
-                if (result.Count > 0) return result;
+                IEnumerator<T> enumerator = coll.GetEnumerator();
+                if (enumerator.MoveNext()) return new Enumerator<T>(enumerator);
             }
-            return null;
+            return new T[] { };
+        }
+
+        public static IEnumerable<T> Take<T>(IEnumerable<T> coll, long n)
+        {
+            long index = 0;
+            return Pipeline<IEnumerable<T>>.Of(coll)
+                .Chain(coll => Map(coll, x => ValueTuple.Create(index++, x)))
+                .Chain(coll => new Limiter<ValueTuple<long, T>>(coll, x => x.Item1 < n))
+                .Chain(coll => Map(coll, x => x.Item2))
+                .Extract();
         }
 
         public static T Find<T>(IEnumerable<T> coll, Predicate<T> pred, T otherwise)
@@ -95,7 +97,7 @@ namespace Game.Utils
                 otherwise);
         }
 
-        public static ICollection<T> Remove<T>(IEnumerable<T> coll, Predicate<T> pred) =>
+        public static IEnumerable<T> Remove<T>(IEnumerable<T> coll, Predicate<T> pred) =>
             Filter(coll, Fns.Compliment(pred));
 
         public static L Add<L, T>(L coll, T item) where L : ICollection<T>
@@ -116,6 +118,13 @@ namespace Game.Utils
             if (dict.ContainsKey(key)) return dict[key];
             return default;
         }
+
+        public static IEnumerable<long> Range() =>
+            new Iterator<long>(0, x => x + 1);
+        public static IEnumerable<long> Range(long end) => Range(0, end);
+        public static IEnumerable<long> Range(long start, long end) =>
+            new Limiter<long>(new Iterator<long>(start, x => x + 1), x => x < end);
+
     }
 
     public class Reduction<T>
@@ -134,4 +143,100 @@ namespace Game.Utils
         public bool IsReduced() => isReduced;
         public T Get() => item;
     }
+
+    public class Limiter<T> : IEnumerable<T>
+    {
+        readonly IEnumerable<T> coll;
+        readonly Predicate<T> pred;
+
+        public Limiter(IEnumerable<T> coll, Predicate<T> pred)
+        {
+            this.coll = coll;
+            this.pred = pred;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            if (coll != null)
+            {
+                foreach (T item in coll)
+                {
+                    if (pred(item)) yield return item;
+                    else break;
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public class Expander<T, U> : IEnumerable<U>
+    {
+        readonly IEnumerable<T> coll;
+        readonly Func<T, IEnumerable<U>> nextFn;
+
+        public Expander(IEnumerable<T> coll, Func<T, IEnumerable<U>> nextFn)
+        {
+            this.coll = coll;
+            this.nextFn = nextFn;
+        }
+
+        public IEnumerator<U> GetEnumerator()
+        {
+            if (coll != null)
+                foreach (T input in coll)
+                    foreach (U item in nextFn(input))
+                        yield return item;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public class Enumerator<T> : IEnumerable<T>
+    {
+        IEnumerator<T> enumerator;
+
+        public Enumerator(IEnumerator<T> enumerator) => this.enumerator = enumerator;
+
+        public IEnumerator<T> GetEnumerator() => enumerator;
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public class Iterator<T> : IEnumerable<T>
+    {
+        T value;
+        readonly Func<T, T> nextFn;
+
+        public Iterator(T init, Func<T, T> nextFn)
+        {
+            value = init;
+            this.nextFn = nextFn;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            while (true)
+            {
+                yield return value;
+                value = nextFn(value);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public class Pipeline<T>
+    {
+        readonly T item;
+
+        private Pipeline(T item) => this.item = item;
+
+        public static Pipeline<T> Of(T item) => new(item);
+
+        public T Extract() => item;
+
+        public Pipeline<R> Chain<R>(Func<T, R> fn) => new(fn(item));
+        public Pipeline<T> Doto(Action<T> action) { action(item); return this; }
+    }
+
 }
