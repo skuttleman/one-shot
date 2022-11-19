@@ -1,6 +1,5 @@
 using UnityEngine;
 using Game.Utils;
-using System.Collections.Generic;
 
 public class FOV : MonoBehaviour
 {
@@ -25,6 +24,11 @@ public class FOV : MonoBehaviour
 
     void LateUpdate()
     {
+        DrawMaskShape();
+    }
+
+    void DrawMaskShape()
+    {
         float angle = startingAngle + target.rotation.eulerAngles.z;
         float angleIncrease = fov / rayCount;
 
@@ -36,18 +40,14 @@ public class FOV : MonoBehaviour
 
         int vertexIndex = 1;
         int triangleIndex = 0;
-        for (int i = 0; i <= rayCount; i++)
+        foreach (int i in Colls.Range(rayCount + 1))
         {
-            Vector3 vertex;
             Vector3 direction = Vectors.ToVector3(angle);
             bool isHit = Physics.Raycast(
                 vertices[0], direction, out RaycastHit hit, viewDistance, layerMask);
-            if (isHit)
-            {
-                vertex = hit.point;
-            }
-            else vertex = vertices[0] + direction * viewDistance;
-            vertices[vertexIndex] = vertex;
+
+            if (isHit) vertices[vertexIndex] = hit.point;
+            else vertices[vertexIndex] = vertices[0] + direction * viewDistance;
 
             if (i > 0)
             {

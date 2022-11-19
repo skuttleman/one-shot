@@ -36,6 +36,8 @@ namespace Game.Utils
             return result;
         }
 
+        public static void DoAll<T>(IEnumerable<T> coll) => ForEach(coll, _ => { });
+
         public static IEnumerable<U> MapCat<T, U>(IEnumerable<T> coll, Func<T, IEnumerable<U>> fn) =>
             new Expander<T, U>(coll, fn);
 
@@ -83,7 +85,7 @@ namespace Game.Utils
         {
             long index = 0;
             return Pipeline<IEnumerable<T>>.Of(coll)
-                .Chain(coll => Map(coll, x => ValueTuple.Create(index++, x)))
+                .Chain(coll => Map(coll, x => (index++, x)))
                 .Chain(coll => new Limiter<ValueTuple<long, T>>(coll, x => x.Item1 < n))
                 .Chain(coll => Map(coll, x => x.Item2))
                 .Extract();
