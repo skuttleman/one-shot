@@ -39,13 +39,11 @@ public class FOV : MonoBehaviour
         Vector2[] uv = new Vector2[vertices.Length];
         int[] triangles = new int[rayCount * 3];
 
-        vertices[0] = target.position;
+        vertices[0] = target.position - new Vector3(0f, 0f, 3f);
 
         Iterator<(int, int)>
-            .Of((1, -3),
-                ((int vertexIdx, int triangleIdx) t) =>
-                    (t.vertexIdx + 1, t.triangleIdx + 3))
-            .Take(rayCount)
+            .Of((1, -3), ((int a, int b) t) => (t.a + 1, t.b + 3))
+            .Take(rayCount + 1)
             .ForEach(((int vertexIdx, int triangleIdx) t) => {
                 Vector3 direction = Vectors.ToVector3(angle);
                 bool isHit = Physics.Raycast(

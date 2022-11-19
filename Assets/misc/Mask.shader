@@ -3,7 +3,7 @@ Shader "Custom/Mask"
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
-        _Color ("Tint", Color) = (1,1,1,1)
+        _Color ("Tint", Color) = (1, 1, 1, 1)
         [MaterialToggle] PixelSnap ("Pixel snap", Float) = 0
     }
  
@@ -11,7 +11,7 @@ Shader "Custom/Mask"
     {
         Tags
         {
-            "Queue"="Transparent-1"
+            "Queue"="Transparent"
             "IgnoreProjector"="True"
             "RenderType"="Transparent"
             "PreviewType"="Plane"
@@ -33,7 +33,8 @@ Shader "Custom/Mask"
  
         Pass
         {
-        CGPROGRAM
+            CGPROGRAM
+
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile _ PIXELSNAP_ON
@@ -77,7 +78,8 @@ Shader "Custom/Mask"
                 c.rgb *= c.a;
                 return c;
             }
-        ENDCG
+
+            ENDCG
         }
     }
 }
