@@ -13,7 +13,7 @@ TagManager:
   - UI
   - Ceilings
   - Walls
-  - 
+  - Enemies
   - 
   - 
   - 
@@ -40,4 +40,16 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Level1
+    uniqueID: 2581684493
+    locked: 0
+  - name: Level2
+    uniqueID: 1250922939
+    locked: 0
+  - name: Level3
+    uniqueID: 731553
+    locked: 0
+  - name: Level4
+    uniqueID: 3234491225
     locked: 0
