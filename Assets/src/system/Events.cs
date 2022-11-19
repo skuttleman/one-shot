@@ -15,7 +15,7 @@ namespace Game.System.Events
 
         public struct AttackModeChange : IEvent
         {
-            public enum AttackMode {  NONE, HAND, WEAPON }
+            public enum AttackMode {  NONE, HAND, WEAPON, FIRING, PUNCHING }
             public readonly AttackMode mode;
             public AttackModeChange(AttackMode mode) => this.mode = mode;
         }
@@ -30,48 +30,6 @@ namespace Game.System.Events
         {
             public readonly bool isScoping;
             public ScopeChange(bool isScoping) => this.isScoping = isScoping;
-        }
-
-        public struct InputAim : IEvent
-        {
-            public readonly bool isAiming;
-            public InputAim(bool isAiming) => this.isAiming = isAiming;
-        }
-
-        public struct InputAttack : IEvent
-        {
-            public readonly bool isAttacking;
-            public InputAttack(bool isAttacking) => this.isAttacking = isAttacking;
-        }
-
-        public struct InputLook : IEvent
-        {
-            public readonly Vector2 direction;
-            public InputLook(Vector2 direction) => this.direction = direction;
-        }
-
-        public struct InputMove : IEvent
-        {
-            public readonly Vector2 direction;
-            public InputMove(Vector2 direction) => this.direction = direction;
-        }
-
-        public struct InputScope : IEvent
-        {
-            public readonly bool isScoping;
-            public InputScope(bool isScoping) => this.isScoping = isScoping;
-        }
-
-        public struct InputStance : IEvent
-        {
-            public readonly float value;
-            public InputStance(float value) => this.value = value;
-        }
-
-        public struct InputMoveModified : IEvent
-        {
-            public readonly bool isModified;
-            public InputMoveModified(bool isModified) => this.isModified = isModified;
         }
     }
 }

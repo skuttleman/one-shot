@@ -7,10 +7,8 @@ using UnityEngine.InputSystem;
 using System;
 using Game.System.Events.Player;
 
-public class PlayerController : Monos.Subscriber<
-        StanceChange, AttackModeChange, MovementSpeedChange,
-        ScopeChange, InputAim, InputAttack, InputLook,
-        InputMove, InputScope, InputStance, InputMoveModified>
+public class PlayerController :
+    Monos.Subscriber<StanceChange, AttackModeChange, MovementSpeedChange, ScopeChange>
 {
     Animator animator;
     Vector2 movement = Vector2.zero;
@@ -73,30 +71,28 @@ public class PlayerController : Monos.Subscriber<
         return walkSpeed;
     }
 
-
-    public override void OnEvent(InputAttack e)
+    public void InputAttack(bool isAttacking)
     {
-        if (e.isAttacking && mode != AttackModeChange.AttackMode.NONE)
-            animator.SetTrigger("attack");
+        if (isAttacking && CanAttack()) animator.SetTrigger("attack");
     }
 
-    public override void OnEvent(InputLook e)
+    public void InputLook(Vector2 direction)
     {
-        if (Vectors.NonZero(e.direction))
-            rotationZ = Vectors.AngleTo(Vector2.zero, e.direction);
+        if (Vectors.NonZero(direction))
+            rotationZ = Vectors.AngleTo(Vector2.zero, direction);
     }
 
-    public override void OnEvent(InputMove e)
+    public void InputMove(Vector2 direction)
     {
-        movement = e.direction;
+        movement = direction;
         bool isMoving = Vectors.NonZero(movement);
         if (isMoving) rotationZ = Vectors.AngleTo(Vector2.zero, movement);
         animator.SetBool("isMoving", isMoving);
     }
 
-    public override void OnEvent(InputStance e)
+    public void InputStance(float value)
     {
-        bool held = e.value >= 0.35f;
+        bool held = value >= 0.35f;
         StanceChange.Stance nextStance;
 
         if (held && IsCrawling()) nextStance = StanceChange.Stance.STANDING;
@@ -113,12 +109,12 @@ public class PlayerController : Monos.Subscriber<
         }
     }
 
-    public override void OnEvent(InputMoveModified e) =>
-        movementModifer = e.isModified ? 0.5f : 1f;
-    public override void OnEvent(InputAim e) =>
-        animator.SetBool("isAiming", e.isAiming);
-    public override void OnEvent(InputScope e) =>
-        animator.SetBool("isScoping", e.isScoping);
+    public void InputMoveModified(bool isModified) =>
+        movementModifer = isModified ? 0.5f : 1f;
+    public void InputAim(bool isAiming) =>
+        animator.SetBool("isAiming", isAiming);
+    public void InputScope(bool isScoping) =>
+        animator.SetBool("isScoping", isScoping);
     bool IsCrawling() => stance == StanceChange.Stance.CRAWLING;
     bool IsCrouching() => stance == StanceChange.Stance.CROUCHING;
     bool IsMovable() => !IsCrawling() || (!isAiming && !isScoping);
@@ -127,5 +123,10 @@ public class PlayerController : Monos.Subscriber<
     public override void OnEvent(AttackModeChange e) => mode = e.mode;
     public override void OnEvent(MovementSpeedChange e) =>
         isMoving = Maths.NonZero(e.speed);
+
+    private bool CanAttack() =>
+        mode != AttackModeChange.AttackMode.NONE
+            && mode != AttackModeChange.AttackMode.FIRING
+            && mode != AttackModeChange.AttackMode.PUNCHING;
     private void OnDestroy() => Destroy();
 }

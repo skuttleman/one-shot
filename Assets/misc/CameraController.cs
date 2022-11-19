@@ -2,8 +2,8 @@ using Game.System.Events.Player;
 using Game.Utils;
 using UnityEngine;
 
-public class CameraController : Monos.Subscriber<
-    ScopeChange, MovementSpeedChange, AttackModeChange>
+public class CameraController
+    : Monos.Subscriber<ScopeChange, MovementSpeedChange, AttackModeChange>
 {
     [Header("Camera Config")]
     [SerializeField] float rotateSpeed;
@@ -51,6 +51,7 @@ public class CameraController : Monos.Subscriber<
     public override void OnEvent(MovementSpeedChange e) =>
         isMoving = Maths.NonZero(e.speed);
     public override void OnEvent(AttackModeChange e) =>
-        isAiming = e.mode == AttackModeChange.AttackMode.WEAPON;
+        isAiming = e.mode == AttackModeChange.AttackMode.WEAPON
+            || e.mode == AttackModeChange.AttackMode.FIRING;
     void OnDestroy() => Destroy();
 }

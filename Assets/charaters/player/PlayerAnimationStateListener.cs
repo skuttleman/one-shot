@@ -39,28 +39,19 @@ public class PlayerAnimationStateListener : MonoBehaviour
         Publish(this.mode != mode, new AttackModeChange(mode));
         this.mode = mode;
     }
-    public void OnMotionMove()
+
+    public void OnMove(int moving)
     {
-        Publish(speed != animator.speed, new MovementSpeedChange(animator.speed));
-        speed = animator.speed;
+        float moveSpeed = moving == 0 ? 0f : animator.speed;
+        Publish(speed != moveSpeed, new MovementSpeedChange(moveSpeed));
+        speed = moveSpeed;
     }
 
-    public void OnMotionStop()
+    public void OnScope(int enabled)
     {
-        Publish(speed != 0f, new MovementSpeedChange(0f));
-        speed = 0f;
-    }
-
-    public void OnScopeOn()
-    {
-        Publish(!isScoping, new ScopeChange(true));
-        isScoping = true;
-    }
-
-    public void OnScopeOff()
-    {
-        Publish(isScoping, new ScopeChange(false));
-        isScoping = false;
+        bool isScoped = enabled != 0;
+        Publish(isScoping != isScoped, new ScopeChange(isScoped));
+        isScoping = isScoped;
     }
 
     public void OnStep() { }
