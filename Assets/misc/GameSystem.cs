@@ -4,36 +4,30 @@ using System.Collections.Generic;
 using Game.Utils;
 using System.Collections;
 
-public class GameSystem : IEnumerable<(Type, IComponent)>
-{
+public class GameSystem : IEnumerable<(Type, IComponent)> {
     private readonly IDictionary<Type, IComponent> components;
 
-    private GameSystem(IDictionary<Type, IComponent> components)
-    {
+    private GameSystem(IDictionary<Type, IComponent> components) {
         this.components = components;
     }
 
-    public T Get<T>()
-    {
+    public T Get<T>() {
         Type key = typeof(T);
         return components.ContainsKey(key)
             ? (T)components[key]
             : default;
     }
 
-    public void Register<T>(T component) where T : IComponent
-    {
+    public void Register<T>(T component) where T : IComponent {
         components.Add(typeof(T), component);
     }
 
-    public void Unregister(Type type)
-    {
+    public void Unregister(Type type) {
         components.Remove(type);
     }
 
 
-    public static GameSystem Default(GameSession session)
-    {
+    public static GameSystem Default(GameSession session) {
         DictionaryPubSub pubsub = new();
 
         return new GameSystem(

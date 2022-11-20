@@ -6,8 +6,7 @@ using Game.System;
 using Game.System.Events.Enemy;
 
 public class EnemyVision :
-    Subscriber<Event<PlayerStance>, PlayerMovementSpeedChange, EnemyCanSeePlayer<EnemyVision>>
-{
+    Subscriber<Event<PlayerStance>, PlayerMovementSpeedChange, EnemyCanSeePlayer<EnemyVision>> {
     [Header("Standing")]
     [SerializeField] float standingMultiplier = 2f;
     [SerializeField] float standingMaxDistance = 5f;
@@ -40,8 +39,7 @@ public class EnemyVision :
     float playerSpeed = 0.1f;
     float seeMeter = 0f;
 
-    new void Start()
-    {
+    new void Start() {
         base.Start();
         session = FindObjectOfType<GameSession>();
         pubsub = session.Get<IPubSub>();
@@ -50,15 +48,13 @@ public class EnemyVision :
         sprite = target.gameObject.GetComponent<SpriteRenderer>();
     }
 
-    new void Update()
-    {
+    new void Update() {
         base.Update();
         AdjustSeeMeter(-Time.deltaTime);
         UpdateTint();
     }
 
-    void UpdateTint()
-    {
+    void UpdateTint() {
         sprite.color = Color.Lerp(
             normal,
             alert,
@@ -73,27 +69,20 @@ public class EnemyVision :
             1000f,
             layerMask);
 
-    void AdjustSeeMeter(float amount)
-    {
+    void AdjustSeeMeter(float amount) {
         seeMeter = Mathf.Clamp(seeMeter + amount, 0f, 1f);
     }
 
-    float CalculateSeeMeterChange(float distance)
-    {
+    float CalculateSeeMeterChange(float distance) {
         float amount = 1f;
 
-        if (playerStance == PlayerStance.STANDING)
-        {
+        if (playerStance == PlayerStance.STANDING) {
             if (distance > standingMaxDistance) return -1f;
             amount *= standingMultiplier;
-        }
-        else if (playerStance == PlayerStance.CROUCHING)
-        {
+        } else if (playerStance == PlayerStance.CROUCHING) {
             if (distance > crouchingMaxDistance) return -1f;
             amount *= crouchingMultiplier;
-        }
-        else
-        {
+        } else {
             if (distance > crawlingMaxDistance) return -1f;
             amount *= crawlingMultiplier;
         }
@@ -102,12 +91,10 @@ public class EnemyVision :
         return amount / (distance * distanceMultiplier);
     }
 
-    private void OnTriggerStay(Collider other)
-    {
+    private void OnTriggerStay(Collider other) {
         if (other.gameObject.CompareTag(playerTag)
             && LineOfSite(out RaycastHit hit)
-            && hit.collider == other)
-        {
+            && hit.collider == other) {
             pubsub.Publish(new EnemyCanSeePlayer<EnemyVision>(
                 this,
                 gameObject.transform.position,
@@ -119,8 +106,7 @@ public class EnemyVision :
     public override void OnEvent(Event<PlayerStance> e) => playerStance = e.data;
     public override void OnEvent(PlayerMovementSpeedChange e) =>
         playerSpeed = Mathf.Clamp(e.data, minPlayerSpeed, float.MaxValue);
-    public override void OnEvent(EnemyCanSeePlayer<EnemyVision> e)
-    {
+    public override void OnEvent(EnemyCanSeePlayer<EnemyVision> e) {
         if (e.enemy == this)
             AdjustSeeMeter(CalculateSeeMeterChange(e.distance));
     }

@@ -2,8 +2,7 @@ using UnityEngine;
 using Game.Utils;
 using System.Collections.Generic;
 
-public class FOV : MonoBehaviour
-{
+public class FOV : MonoBehaviour {
     [SerializeField] LayerMask layerMask;
     [SerializeField] string sortingLayer = "Level1";
     [SerializeField] float fov = 300f;
@@ -16,8 +15,7 @@ public class FOV : MonoBehaviour
     readonly int rayCount = 40;
     new Renderer renderer;
 
-    void Start()
-    {
+    void Start() {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
         renderer = GetComponent<MeshRenderer>();
@@ -25,10 +23,8 @@ public class FOV : MonoBehaviour
         StartCoroutine(DrawMaskShape());
     }
 
-    IEnumerator<YieldInstruction> DrawMaskShape()
-    {
-        while (true)
-        {
+    IEnumerator<YieldInstruction> DrawMaskShape() {
+        while (true) {
             renderer.sortingLayerName = sortingLayer;
 
             float angle = startingAngle;
@@ -42,15 +38,13 @@ public class FOV : MonoBehaviour
 
             Sequences.Iterate((1, -3), ((int a, int b) t) => (t.a + 1, t.b + 3))
                 .Take(rayCount + 1)
-                .ForEach(((int vertexIdx, int triangleIdx) t) =>
-                {
+                .ForEach(((int vertexIdx, int triangleIdx) t) => {
                     bool isHit = IsHit(angle, out RaycastHit hit);
                     vertices[t.vertexIdx] = isHit
                         ? target.InverseTransformPoint(hit.point)
                         : vertices[0] + Vectors.ToVector3(angle) * viewDistance;
 
-                    if (t.triangleIdx >= 0)
-                    {
+                    if (t.triangleIdx >= 0) {
                         triangles[t.triangleIdx] = 0;
                         triangles[t.triangleIdx + 1] = t.vertexIdx - 1;
                         triangles[t.triangleIdx + 2] = t.vertexIdx;

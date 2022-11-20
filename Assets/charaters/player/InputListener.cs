@@ -2,12 +2,10 @@ using Game.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class InputListener : MonoBehaviour
-{
+public class InputListener : MonoBehaviour {
     PlayerController controller;
 
-    void Start()
-    {
+    void Start() {
         controller = GetComponent<PlayerController>();
     }
 

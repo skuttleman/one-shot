@@ -5,8 +5,7 @@ using Game.Utils.Mono;
 using Game.System.Events;
 
 public class CameraController
-    : Subscriber<PlayerScopeChange, PlayerMovementSpeedChange, Event<PlayerAttackMode>>
-{
+    : Subscriber<PlayerScopeChange, PlayerMovementSpeedChange, Event<PlayerAttackMode>> {
     [Header("Camera Config")]
     [SerializeField] float rotateSpeed;
     [SerializeField] float moveOffset;
@@ -22,22 +21,19 @@ public class CameraController
     bool isMoving;
     bool isAiming;
 
-    new void Start()
-    {
+    new void Start() {
         base.Start();
         offset = GetComponent<CinemachineCameraOffset>();
         session = FindObjectOfType<GameSession>();
         target = session.GetTaggedObject(targetTag).transform;
     }
 
-    new void Update()
-    {
+    new void Update() {
         base.Update();
         SetOffset();
     }
 
-    void SetOffset()
-    {
+    void SetOffset() {
         float lookAhead = 0f;
         if (isScoping) lookAhead += binoOffset;
         else if (isMoving) lookAhead += moveOffset;

@@ -6,8 +6,7 @@ using Game.System.Events;
 
 public class PlayerController : Subscriber
     <Event<PlayerStance>, Event<PlayerAttackMode>,
-     PlayerMovementSpeedChange, PlayerScopeChange>
-{
+     PlayerMovementSpeedChange, PlayerScopeChange> {
     Animator animator;
     Vector2 movement = Vector2.zero;
 
@@ -25,31 +24,26 @@ public class PlayerController : Subscriber
     float rotationZ = 0f;
     float movementModifer = 1f;
 
-    new void Start()
-    {
+    new void Start() {
         base.Start();
         animator = GetComponent<Animator>();
     }
 
-    new void Update()
-    {
+    new void Update() {
         base.Update();
         RotatePlayer();
         MovePlayer();
     }
 
-    void RotatePlayer()
-    {
+    void RotatePlayer() {
         transform.rotation = Quaternion.Lerp(
             transform.rotation,
             Quaternion.Euler(0, 0, rotationZ),
             rotationSpeed * Time.deltaTime);
     }
 
-    void MovePlayer()
-    {
-        if (IsMovable())
-        {
+    void MovePlayer() {
+        if (IsMovable()) {
             float speed = movementModifer * StanceSpeed();
 
             if (IsAiming()) speed *= 0.9f;
@@ -62,34 +56,29 @@ public class PlayerController : Subscriber
         }
     }
 
-    float StanceSpeed()
-    {
+    float StanceSpeed() {
         if (IsCrouching()) return crouchSpeed;
         if (IsCrawling()) return crawlSpeed;
         return walkSpeed;
     }
 
-    public void InputAttack(bool isAttacking)
-    {
+    public void InputAttack(bool isAttacking) {
         if (isAttacking && CanAttack()) animator.SetTrigger("attack");
     }
 
-    public void InputLook(Vector2 direction)
-    {
+    public void InputLook(Vector2 direction) {
         if (Vectors.NonZero(direction))
             rotationZ = Vectors.AngleTo(Vector2.zero, direction);
     }
 
-    public void InputMove(Vector2 direction)
-    {
+    public void InputMove(Vector2 direction) {
         movement = direction;
         bool isMoving = Vectors.NonZero(movement);
         if (isMoving) rotationZ = Vectors.AngleTo(Vector2.zero, movement);
         animator.SetBool("isMoving", isMoving);
     }
 
-    public void InputStance(float value)
-    {
+    public void InputStance(float value) {
         bool held = value >= 0.35f;
         PlayerStance nextStance;
 
@@ -100,8 +89,7 @@ public class PlayerController : Subscriber
 
         if (nextStance != PlayerStance.CRAWLING
             || (!IsAiming() && !isScoping)
-            || !isMoving)
-        {
+            || !isMoving) {
             stance = nextStance;
             animator.SetInteger("stance", (int)stance);
         }

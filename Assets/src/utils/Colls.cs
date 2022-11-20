@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Game.Utils
-{
-    public static class Colls
-    {
-        public static L Add<L, T>(L coll, T item) where L : ICollection<T>
-        {
+namespace Game.Utils {
+    public static class Colls {
+        public static L Add<L, T>(L coll, T item) where L : ICollection<T> {
             coll.Add(item);
             return coll;
         }
@@ -18,8 +15,7 @@ namespace Game.Utils
         public static Predicate<T> Pred<T>(ISet<T> set) =>
             item => set.Contains(item);
 
-        public static U Get<T, U>(IDictionary<T, U> dict, T key)
-        {
+        public static U Get<T, U>(IDictionary<T, U> dict, T key) {
             if (dict.ContainsKey(key)) return dict[key];
             return default;
         }
@@ -30,8 +26,7 @@ namespace Game.Utils
         public static Sequence<long> Range(long start, long end, long jump) =>
             Sequence<long>.Of(RangeEnumerable(start, end, jump));
 
-        private static IEnumerable<long> RangeEnumerable(long start, long end, long jump)
-        {
+        private static IEnumerable<long> RangeEnumerable(long start, long end, long jump) {
             for (long i = start; i < end; i += jump)
                 yield return i;
         }

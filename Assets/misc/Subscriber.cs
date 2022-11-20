@@ -4,17 +4,14 @@ using Game.System;
 using Game.System.Events;
 using System.Collections.Concurrent;
 
-namespace Game.Utils.Mono
-{
+namespace Game.Utils.Mono {
     public abstract class Subscriber<T> : MonoBehaviour
-        where T : IEvent
-    {
+        where T : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -22,8 +19,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
         }
@@ -34,14 +30,12 @@ namespace Game.Utils.Mono
 
     public abstract class Subscriber<T, U> : MonoBehaviour
         where T : IEvent
-        where U : IEvent
-    {
+        where U : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -50,8 +44,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -65,14 +58,12 @@ namespace Game.Utils.Mono
     public abstract class Subscriber<T, U, V> : MonoBehaviour
         where T : IEvent
         where U : IEvent
-        where V : IEvent
-    {
+        where V : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -82,8 +73,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -100,14 +90,12 @@ namespace Game.Utils.Mono
         where T : IEvent
         where U : IEvent
         where V : IEvent
-        where W : IEvent
-    {
+        where W : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -118,8 +106,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -139,14 +126,12 @@ namespace Game.Utils.Mono
         where U : IEvent
         where V : IEvent
         where W : IEvent
-        where X : IEvent
-    {
+        where X : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -158,8 +143,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -182,14 +166,12 @@ namespace Game.Utils.Mono
         where V : IEvent
         where W : IEvent
         where X : IEvent
-        where Y : IEvent
-    {
+        where Y : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -202,8 +184,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -229,14 +210,12 @@ namespace Game.Utils.Mono
         where W : IEvent
         where X : IEvent
         where Y : IEvent
-        where Z : IEvent
-    {
+        where Z : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -250,8 +229,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -280,14 +258,12 @@ namespace Game.Utils.Mono
         where X : IEvent
         where Y : IEvent
         where Z : IEvent
-        where A : IEvent
-    {
+        where A : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -302,8 +278,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -335,14 +310,12 @@ namespace Game.Utils.Mono
         where Y : IEvent
         where Z : IEvent
         where A : IEvent
-        where B : IEvent
-    {
+        where B : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -358,8 +331,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -394,14 +366,12 @@ namespace Game.Utils.Mono
         where Z : IEvent
         where A : IEvent
         where B : IEvent
-        where C : IEvent
-    {
+        where C : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -418,8 +388,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -457,14 +426,12 @@ namespace Game.Utils.Mono
         where A : IEvent
         where B : IEvent
         where C : IEvent
-        where D : IEvent
-    {
+        where D : IEvent {
         ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Start()
-        {
+        protected void Start() {
             q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
@@ -482,8 +449,7 @@ namespace Game.Utils.Mono
             };
         }
 
-        protected void Update()
-        {
+        protected void Update() {
             while (q.TryDequeue(out IEvent e))
                 if (e.GetType() == typeof(T)) OnEvent((T)e);
                 else if (e.GetType() == typeof(U)) OnEvent((U)e);
@@ -512,18 +478,12 @@ namespace Game.Utils.Mono
         public abstract void OnEvent(D e);
     }
 
-    static class SubscriberUtils
-    {
-        public static void Unsubscribe(IPubSub pubsub, params long[] subs)
-        {
-            Sequences.ForEach(subs, sub =>
-            {
-                try
-                {
+    static class SubscriberUtils {
+        public static void Unsubscribe(IPubSub pubsub, params long[] subs) {
+            Sequences.ForEach(subs, sub => {
+                try {
                     pubsub.Unsubscribe(sub);
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     Debug.LogException(ex);
                 }
             });

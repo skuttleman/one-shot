@@ -3,13 +3,11 @@ using Game.System.Events.Player;
 using Game.Utils.Mono;
 using UnityEngine;
 
-public class CollisionListener : Subscriber<Event<PlayerStance>>
-{
+public class CollisionListener : Subscriber<Event<PlayerStance>> {
     [SerializeField] PlayerStance stance;
     BoxCollider collide;
 
-    new void Start()
-    {
+    new void Start() {
         base.Start();
         collide = GetComponent<BoxCollider>();
     }
