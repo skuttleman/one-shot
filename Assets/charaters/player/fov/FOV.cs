@@ -8,12 +8,12 @@ public class FOV : MonoBehaviour
     [SerializeField] float fov = 300f;
     [SerializeField] float viewDistance = 4f;
     [SerializeField] float startingAngle = 0f;
-    
+
     Transform target;
     readonly int rayCount = 40;
     Mesh mesh;
     new Renderer renderer;
-    
+
     void Start()
     {
         mesh = new Mesh();
@@ -40,23 +40,23 @@ public class FOV : MonoBehaviour
 
         vertices[0] = Vector3.zero;
 
-        Iterator<(int, int)>
-            .Of((1, -3), ((int a, int b) t) => (t.a + 1, t.b + 3))
+        Sequences.Iterate((1, -3), ((int a, int b) t) => (t.a + 1, t.b + 3))
             .Take(rayCount + 1)
-            .ForEach(((int vertexIdx, int triangleIdx) t) => {
-                vertices[t.vertexIdx] = IsHit(angle, out RaycastHit hit)
-                    ? target.InverseTransformPoint(hit.point)
-                    : vertices[0] + Vectors.ToVector3(angle) * viewDistance;
-
-                if (t.triangleIdx >= 0)
+            .ForEach(((int vertexIdx, int triangleIdx) t) =>
                 {
-                    triangles[t.triangleIdx] = 0;
-                    triangles[t.triangleIdx + 1] = t.vertexIdx - 1;
-                    triangles[t.triangleIdx + 2] = t.vertexIdx;
-                }
+                    vertices[t.vertexIdx] = IsHit(angle, out RaycastHit hit)
+                        ? target.InverseTransformPoint(hit.point)
+                        : vertices[0] + Vectors.ToVector3(angle) * viewDistance;
 
-                angle -= angleIncrease;
-            });
+                    if (t.triangleIdx >= 0)
+                    {
+                        triangles[t.triangleIdx] = 0;
+                        triangles[t.triangleIdx + 1] = t.vertexIdx - 1;
+                        triangles[t.triangleIdx + 2] = t.vertexIdx;
+                    }
+
+                    angle -= angleIncrease;
+                });
 
         mesh.vertices = vertices;
         mesh.uv = uv;

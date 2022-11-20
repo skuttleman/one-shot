@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using Game.System;
 using Game.System.Events;
 using Game.System.Events.Player;
-using Game.Utils;
 using UnityEngine;
 
 public class PlayerAnimationStateListener : MonoBehaviour
@@ -40,7 +37,7 @@ public class PlayerAnimationStateListener : MonoBehaviour
         this.mode = mode;
     }
 
-    public void OnMove(int moving)
+    public void OnMovement(int moving)
     {
         float moveSpeed = moving == 0 ? 0f : animator.speed;
         Publish(speed != moveSpeed, new MovementSpeedChange(moveSpeed));

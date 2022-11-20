@@ -90,7 +90,7 @@ AnimationClip:
     intParameter: 1
     messageOptions: 0
   - time: 0
-    functionName: OnMove
+    functionName: OnMovement
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

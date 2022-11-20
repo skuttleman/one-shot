@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace Game.System.Events
+﻿namespace Game.System.Events
 {
     public interface IEvent { }
 
@@ -15,7 +13,7 @@ namespace Game.System.Events
 
         public struct AttackModeChange : IEvent
         {
-            public enum AttackMode {  NONE, HAND, WEAPON, FIRING, PUNCHING }
+            public enum AttackMode { NONE, HAND, WEAPON, FIRING, PUNCHING }
             public readonly AttackMode mode;
             public AttackModeChange(AttackMode mode) => this.mode = mode;
         }

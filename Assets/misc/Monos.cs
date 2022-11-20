@@ -8,7 +8,7 @@ public class Monos
 {
     static void Unsubscribe(IPubSub pubsub, params long[] subs)
     {
-        Colls.ForEach(subs, sub =>
+        Sequences.ForEach(subs, sub =>
         {
             try
             {

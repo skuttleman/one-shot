@@ -5,20 +5,13 @@ namespace Game.Utils
 {
     public static class Fns
     {
-        public static Predicate<T> Compliment<T>(Predicate<T> pred)
-        {
-            return t => !pred(t);
-        }
-
-        public static Func<T, V> Comp<T, U, V>(Func<U, V> fn1, Func<T, U> fn2)
-        {
-            return t => fn1(fn2(t));
-        }
-
-        public static Action<T> Comp<T, U>(Action<U> action, Func<T, U> fn)
-        {
-            return t => action(fn(t));
-        }
+        public static Predicate<T> Compliment<T>(Predicate<T> pred) =>
+            t => !pred(t);
+        public static Func<T, V> Comp<T, U, V>(Func<U, V> fn1, Func<T, U> fn2) =>
+            t => fn1(fn2(t));
+        public static Action<T> Comp<T, U>(Action<U> action, Func<T, U> fn) =>
+            t => action(fn(t));
+        public static T Identity<T>(T item) => item;
     }
 
     public class MultiMethod<T, U, R>

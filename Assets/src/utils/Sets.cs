@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Game.Utils
 {
@@ -7,13 +6,9 @@ namespace Game.Utils
     {
         public static bool ContainsAny<T>(ISet<T> set, params T[] coll)
         {
-            return Colls.ReduceUntil(
-                coll,
-                (b, i) =>
-                    set.Contains(i)
-                        ? Reduction<bool>.Reduced(true)
-                        : Reduction<bool>.UnReduced(b),
-                false);
+            foreach (T item in coll)
+                if (set.Contains(item)) return true;
+            return false;
         }
     }
 }

@@ -13,13 +13,13 @@ public class GameSession : MonoBehaviour
 
     public void RegisterTags(IEnumerable<string> tags, GameObject obj)
     {
-        Colls.ForEach(tags, tag =>
-        {
-            ISet<GameObject> objects = new HashSet<GameObject>();
-            if (taggedObjects.ContainsKey(tag)) objects = taggedObjects[tag];
-            else taggedObjects[tag] = objects;
-            if (!objects.Contains(obj)) objects.Add(obj);
-        });
+        Sequences.ForEach(tags, tag =>
+            {
+                ISet<GameObject> objects = new HashSet<GameObject>();
+                if (taggedObjects.ContainsKey(tag)) objects = taggedObjects[tag];
+                else taggedObjects[tag] = objects;
+                if (!objects.Contains(obj)) objects.Add(obj);
+            });
     }
 
     public GameObject GetTaggedObject(string tag)
@@ -27,7 +27,7 @@ public class GameSession : MonoBehaviour
         ISet<GameObject> objects = GetTaggedObjects(tag);
         if (objects.Count > 1)
             throw new InvalidOperationException("More than one item found for tag: " + tag);
-        return Colls.First(objects);
+        return Sequences.First(objects);
     }
 
     public T Get<T>() => system.Get<T>();

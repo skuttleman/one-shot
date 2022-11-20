@@ -68,7 +68,7 @@ namespace Game.System
 
         void PublishEvent(IEvent e)
         {
-            Colls.ForEach(actions[e.GetType()], entry => entry.Value(e));
+            Sequences.ForEach(actions[e.GetType()], entry => entry.Value(e));
         }
     }
 }

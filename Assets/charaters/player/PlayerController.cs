@@ -1,10 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Game.System;
 using Game.Utils;
-using UnityEngine.InputSystem;
-using System;
 using Game.System.Events.Player;
 
 public class PlayerController :

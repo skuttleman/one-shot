@@ -53,5 +53,6 @@ public class CameraController
     public override void OnEvent(AttackModeChange e) =>
         isAiming = e.mode == AttackModeChange.AttackMode.WEAPON
             || e.mode == AttackModeChange.AttackMode.FIRING;
+
     void OnDestroy() => Destroy();
 }
