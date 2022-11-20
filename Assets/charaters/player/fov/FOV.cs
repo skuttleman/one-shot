@@ -29,8 +29,6 @@ public class FOV : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(drawDelay);
-
             renderer.sortingLayerName = sortingLayer;
 
             float angle = startingAngle;
@@ -45,25 +43,27 @@ public class FOV : MonoBehaviour
             Sequences.Iterate((1, -3), ((int a, int b) t) => (t.a + 1, t.b + 3))
                 .Take(rayCount + 1)
                 .ForEach(((int vertexIdx, int triangleIdx) t) =>
+                {
+                    bool isHit = IsHit(angle, out RaycastHit hit);
+                    vertices[t.vertexIdx] = isHit
+                        ? target.InverseTransformPoint(hit.point)
+                        : vertices[0] + Vectors.ToVector3(angle) * viewDistance;
+
+                    if (t.triangleIdx >= 0)
                     {
-                        vertices[t.vertexIdx] = IsHit(angle, out RaycastHit hit)
-                            ? target.InverseTransformPoint(hit.point)
-                            : vertices[0] + Vectors.ToVector3(angle) * viewDistance;
+                        triangles[t.triangleIdx] = 0;
+                        triangles[t.triangleIdx + 1] = t.vertexIdx - 1;
+                        triangles[t.triangleIdx + 2] = t.vertexIdx;
+                    }
 
-                        if (t.triangleIdx >= 0)
-                        {
-                            triangles[t.triangleIdx] = 0;
-                            triangles[t.triangleIdx + 1] = t.vertexIdx - 1;
-                            triangles[t.triangleIdx + 2] = t.vertexIdx;
-                        }
-
-                        angle -= angleIncrease;
-                    });
+                    angle -= angleIncrease;
+                });
 
             mesh.vertices = vertices;
             mesh.uv = uv;
             mesh.triangles = triangles;
             mesh.bounds = new Bounds(vertices[0], Vector3.one * 1000f);
+            yield return new WaitForSeconds(drawDelay);
         }
     }
 
