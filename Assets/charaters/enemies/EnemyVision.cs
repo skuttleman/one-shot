@@ -1,8 +1,9 @@
 using UnityEngine;
 using Game.System.Events.Player;
 using Game.Utils.Mono;
+using Game.System.Events;
 
-public class EnemyVision : Subscriber<StanceChange, MovementSpeedChange>
+public class EnemyVision : Subscriber<Event<PlayerStance>, PlayerMovementSpeedChange>
 {
     [Header("Standing")]
     [SerializeField] float standingMultiplier = 2f;
@@ -30,7 +31,7 @@ public class EnemyVision : Subscriber<StanceChange, MovementSpeedChange>
     GameSession session;
     GameObject player;
     Transform target;
-    StanceChange.Stance playerStance = StanceChange.Stance.STANDING;
+    PlayerStance playerStance = PlayerStance.STANDING;
     SpriteRenderer sprite;
     float minPlayerSpeed = 0.1f;
     float playerSpeed = 0.1f;
@@ -92,12 +93,12 @@ public class EnemyVision : Subscriber<StanceChange, MovementSpeedChange>
         float distance = hit.distance;
         float amount = 1f;
 
-        if (playerStance == StanceChange.Stance.STANDING)
+        if (playerStance == PlayerStance.STANDING)
         {
             if (distance > standingMaxDistance) return -1f;
             amount *= standingMultiplier;
         }
-        else if (playerStance == StanceChange.Stance.CROUCHING)
+        else if (playerStance == PlayerStance.CROUCHING)
         {
             if (distance > crouchingMaxDistance) return -1f;
             amount *= crouchingMultiplier;
@@ -122,7 +123,7 @@ public class EnemyVision : Subscriber<StanceChange, MovementSpeedChange>
         if (other.gameObject.tag == playerTag) playerInFOV = false;
     }
 
-    public override void OnEvent(StanceChange e) => playerStance = e.stance;
-    public override void OnEvent(MovementSpeedChange e) =>
-        playerSpeed = Mathf.Clamp(e.speed, minPlayerSpeed, float.MaxValue);
+    public override void OnEvent(Event<PlayerStance> e) => playerStance = e.data;
+    public override void OnEvent(PlayerMovementSpeedChange e) =>
+        playerSpeed = Mathf.Clamp(e.data, minPlayerSpeed, float.MaxValue);
 }

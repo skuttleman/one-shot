@@ -2,16 +2,18 @@ using UnityEngine;
 using Game.Utils;
 using Game.System.Events.Player;
 using Game.Utils.Mono;
+using Game.System.Events;
 
-public class PlayerController :
-    Subscriber<StanceChange, AttackModeChange, MovementSpeedChange, ScopeChange>
+public class PlayerController : Subscriber
+    <Event<PlayerStance>, Event<PlayerAttackMode>,
+     PlayerMovementSpeedChange, PlayerScopeChange>
 {
     Animator animator;
     Vector2 movement = Vector2.zero;
 
     // animation state
-    AttackModeChange.AttackMode mode;
-    StanceChange.Stance stance;
+    PlayerAttackMode mode;
+    PlayerStance stance;
     bool isMoving;
     bool isScoping;
 
@@ -89,14 +91,14 @@ public class PlayerController :
     public void InputStance(float value)
     {
         bool held = value >= 0.35f;
-        StanceChange.Stance nextStance;
+        PlayerStance nextStance;
 
-        if (held && IsCrawling()) nextStance = StanceChange.Stance.STANDING;
-        else if (held) nextStance = StanceChange.Stance.CRAWLING;
-        else if (IsCrouching()) nextStance = StanceChange.Stance.STANDING;
-        else nextStance = StanceChange.Stance.CROUCHING;
+        if (held && IsCrawling()) nextStance = PlayerStance.STANDING;
+        else if (held) nextStance = PlayerStance.CRAWLING;
+        else if (IsCrouching()) nextStance = PlayerStance.STANDING;
+        else nextStance = PlayerStance.CROUCHING;
 
-        if (nextStance != StanceChange.Stance.CRAWLING
+        if (nextStance != PlayerStance.CRAWLING
             || (!IsAiming() && !isScoping)
             || !isMoving)
         {
@@ -111,19 +113,19 @@ public class PlayerController :
         animator.SetBool("isAiming", isAiming);
     public void InputScope(bool isScoping) =>
         animator.SetBool("isScoping", isScoping);
-    bool IsCrawling() => stance == StanceChange.Stance.CRAWLING;
-    bool IsCrouching() => stance == StanceChange.Stance.CROUCHING;
-    bool IsAiming() => mode == AttackModeChange.AttackMode.WEAPON
-        || mode == AttackModeChange.AttackMode.FIRING;
+    bool IsCrawling() => stance == PlayerStance.CRAWLING;
+    bool IsCrouching() => stance == PlayerStance.CROUCHING;
+    bool IsAiming() => mode == PlayerAttackMode.WEAPON
+        || mode == PlayerAttackMode.FIRING;
     bool IsMovable() => !IsCrawling() || (!IsAiming() && !isScoping);
-    public override void OnEvent(ScopeChange e) => isScoping = e.isScoping;
-    public override void OnEvent(StanceChange e) => stance = e.stance;
-    public override void OnEvent(AttackModeChange e) => mode = e.mode;
-    public override void OnEvent(MovementSpeedChange e) =>
-        isMoving = Maths.NonZero(e.speed);
+    public override void OnEvent(PlayerScopeChange e) => isScoping = e.data;
+    public override void OnEvent(Event<PlayerStance> e) => stance = e.data;
+    public override void OnEvent(Event<PlayerAttackMode> e) => mode = e.data;
+    public override void OnEvent(PlayerMovementSpeedChange e) =>
+        isMoving = Maths.NonZero(e.data);
 
     private bool CanAttack() =>
-        mode != AttackModeChange.AttackMode.NONE
-            && mode != AttackModeChange.AttackMode.FIRING
-            && mode != AttackModeChange.AttackMode.PUNCHING;
+        mode != PlayerAttackMode.NONE
+            && mode != PlayerAttackMode.FIRING
+            && mode != PlayerAttackMode.PUNCHING;
 }

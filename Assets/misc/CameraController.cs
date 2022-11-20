@@ -2,9 +2,10 @@ using Game.System.Events.Player;
 using Game.Utils;
 using UnityEngine;
 using Game.Utils.Mono;
+using Game.System.Events;
 
 public class CameraController
-    : Subscriber<ScopeChange, MovementSpeedChange, AttackModeChange>
+    : Subscriber<PlayerScopeChange, PlayerMovementSpeedChange, Event<PlayerAttackMode>>
 {
     [Header("Camera Config")]
     [SerializeField] float rotateSpeed;
@@ -49,10 +50,10 @@ public class CameraController
             rotateSpeed * Time.deltaTime);
     }
 
-    public override void OnEvent(ScopeChange e) => isScoping = e.isScoping;
-    public override void OnEvent(MovementSpeedChange e) =>
-        isMoving = Maths.NonZero(e.speed);
-    public override void OnEvent(AttackModeChange e) =>
-        isAiming = e.mode == AttackModeChange.AttackMode.WEAPON
-            || e.mode == AttackModeChange.AttackMode.FIRING;
+    public override void OnEvent(PlayerScopeChange e) => isScoping = e.data;
+    public override void OnEvent(PlayerMovementSpeedChange e) =>
+        isMoving = Maths.NonZero(e.data);
+    public override void OnEvent(Event<PlayerAttackMode> e) =>
+        isAiming = e.data == PlayerAttackMode.WEAPON
+            || e.data == PlayerAttackMode.FIRING;
 }

@@ -2,32 +2,27 @@
 {
     public interface IEvent { }
 
+    public struct Event<T> : IEvent
+    {
+        public readonly T data;
+        public Event(T data) => this.data = data;
+    }
+
     namespace Player
     {
-        public struct StanceChange : IEvent
+        public enum PlayerStance { STANDING, CROUCHING, CRAWLING }
+        public enum PlayerAttackMode { NONE, HAND, WEAPON, FIRING, PUNCHING }
+
+        public struct PlayerMovementSpeedChange : IEvent
         {
-            public enum Stance { STANDING, CROUCHING, CRAWLING }
-            public readonly Stance stance;
-            public StanceChange(Stance stance) => this.stance = stance;
+            public readonly float data;
+            public PlayerMovementSpeedChange(float speed) => data = speed;
         }
 
-        public struct AttackModeChange : IEvent
+        public struct PlayerScopeChange : IEvent
         {
-            public enum AttackMode { NONE, HAND, WEAPON, FIRING, PUNCHING }
-            public readonly AttackMode mode;
-            public AttackModeChange(AttackMode mode) => this.mode = mode;
-        }
-
-        public struct MovementSpeedChange : IEvent
-        {
-            public readonly float speed;
-            public MovementSpeedChange(float speed) => this.speed = speed;
-        }
-
-        public struct ScopeChange : IEvent
-        {
-            public readonly bool isScoping;
-            public ScopeChange(bool isScoping) => this.isScoping = isScoping;
+            public readonly bool data;
+            public PlayerScopeChange(bool isScoping) => data = isScoping;
         }
     }
 }

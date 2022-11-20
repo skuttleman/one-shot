@@ -8,8 +8,8 @@ public class PlayerAnimationStateListener : MonoBehaviour
     Animator animator;
     GameSession session;
     IPubSub pubsub;
-    StanceChange.Stance stance;
-    AttackModeChange.AttackMode mode;
+    PlayerStance stance;
+    PlayerAttackMode mode;
     float speed;
     bool isScoping;
 
@@ -25,29 +25,29 @@ public class PlayerAnimationStateListener : MonoBehaviour
         if (condition) pubsub.Publish(e);
     }
 
-    public void OnStanceChange(StanceChange.Stance stance)
+    public void OnStanceChange(PlayerStance stance)
     {
-        Publish(this.stance != stance, new StanceChange(stance));
+        Publish(this.stance != stance, new Event<PlayerStance>(stance));
         this.stance = stance;
     }
 
-    public void OnAttackMode(AttackModeChange.AttackMode mode)
+    public void OnAttackMode(PlayerAttackMode mode)
     {
-        Publish(this.mode != mode, new AttackModeChange(mode));
+        Publish(this.mode != mode, new Event<PlayerAttackMode>(mode));
         this.mode = mode;
     }
 
     public void OnMovement(int moving)
     {
         float moveSpeed = moving == 0 ? 0f : animator.speed;
-        Publish(speed != moveSpeed, new MovementSpeedChange(moveSpeed));
+        Publish(speed != moveSpeed, new PlayerMovementSpeedChange(moveSpeed));
         speed = moveSpeed;
     }
 
     public void OnScope(int enabled)
     {
         bool isScoped = enabled != 0;
-        Publish(isScoping != isScoped, new ScopeChange(isScoped));
+        Publish(isScoping != isScoped, new PlayerScopeChange(isScoped));
         isScoping = isScoped;
     }
 

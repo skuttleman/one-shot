@@ -1,10 +1,11 @@
+using Game.System.Events;
 using Game.System.Events.Player;
 using Game.Utils.Mono;
 using UnityEngine;
 
-public class CollisionListener : Subscriber<StanceChange>
+public class CollisionListener : Subscriber<Event<PlayerStance>>
 {
-    [SerializeField] StanceChange.Stance stance;
+    [SerializeField] PlayerStance stance;
     BoxCollider collide;
 
     new void Start()
@@ -13,6 +14,6 @@ public class CollisionListener : Subscriber<StanceChange>
         collide = GetComponent<BoxCollider>();
     }
 
-    public override void OnEvent(StanceChange e) =>
-        collide.enabled = e.stance == stance;
+    public override void OnEvent(Event<PlayerStance> e) =>
+        collide.enabled = e.data == stance;
 }
