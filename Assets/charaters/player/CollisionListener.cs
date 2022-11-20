@@ -1,11 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Game.System;
 using Game.System.Events.Player;
+using Game.Utils.Mono;
 using UnityEngine;
 
-public class CollisionListener : Monos.Subscriber<StanceChange>
+public class CollisionListener : Subscriber<StanceChange>
 {
     [SerializeField] StanceChange.Stance stance;
     BoxCollider collide;

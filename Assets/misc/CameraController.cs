@@ -1,9 +1,10 @@
 using Game.System.Events.Player;
 using Game.Utils;
 using UnityEngine;
+using Game.Utils.Mono;
 
 public class CameraController
-    : Monos.Subscriber<ScopeChange, MovementSpeedChange, AttackModeChange>
+    : Subscriber<ScopeChange, MovementSpeedChange, AttackModeChange>
 {
     [Header("Camera Config")]
     [SerializeField] float rotateSpeed;

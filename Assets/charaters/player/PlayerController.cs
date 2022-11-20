@@ -1,9 +1,10 @@
 using UnityEngine;
 using Game.Utils;
 using Game.System.Events.Player;
+using Game.Utils.Mono;
 
 public class PlayerController :
-    Monos.Subscriber<StanceChange, AttackModeChange, MovementSpeedChange, ScopeChange>
+    Subscriber<StanceChange, AttackModeChange, MovementSpeedChange, ScopeChange>
 {
     Animator animator;
     Vector2 movement = Vector2.zero;

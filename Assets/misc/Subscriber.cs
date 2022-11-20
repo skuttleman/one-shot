@@ -4,23 +4,8 @@ using Game.System;
 using Game.System.Events;
 using Game.Utils;
 
-public class Monos
+namespace Game.Utils.Mono
 {
-    static void Unsubscribe(IPubSub pubsub, params long[] subs)
-    {
-        Sequences.ForEach(subs, sub =>
-        {
-            try
-            {
-                pubsub.Unsubscribe(sub);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogException(ex);
-            }
-        });
-    }
-
     public abstract class Subscriber<T> : MonoBehaviour
         where T : IEvent
     {
@@ -33,7 +18,7 @@ public class Monos
             sub = pubsub.Subscribe<T>(OnEvent);
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, sub);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, sub);
         public abstract void OnEvent(T e);
     }
 
@@ -53,7 +38,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
     }
@@ -76,7 +61,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -102,7 +87,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -131,7 +116,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -163,7 +148,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -198,7 +183,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -236,7 +221,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -277,7 +262,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -321,7 +306,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -368,7 +353,7 @@ public class Monos
             };
         }
 
-        protected void Destroy() => Unsubscribe(pubsub, subs);
+        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -382,4 +367,21 @@ public class Monos
         public abstract void OnEvent(D e);
     }
 
+    static class SubscriberUtils
+    {
+        public static void Unsubscribe(IPubSub pubsub, params long[] subs)
+        {
+            Sequences.ForEach(subs, sub =>
+            {
+                try
+                {
+                    pubsub.Unsubscribe(sub);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
+            });
+        }
+    }
 }

@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Game.System.Events.Player;
-using Game.Utils;
+using Game.Utils.Mono;
 
-public class EnemyVision : Monos.Subscriber<StanceChange, MovementSpeedChange>
+public class EnemyVision : Subscriber<StanceChange, MovementSpeedChange>
 {
     [Header("Standing")]
     [SerializeField] float standingMultiplier = 2f;
