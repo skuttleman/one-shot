@@ -2,8 +2,11 @@ using UnityEngine;
 using Game.System.Events.Player;
 using Game.Utils.Mono;
 using Game.System.Events;
+using Game.System;
+using Game.System.Events.Enemy;
 
-public class EnemyVision : Subscriber<Event<PlayerStance>, PlayerMovementSpeedChange>
+public class EnemyVision :
+    Subscriber<Event<PlayerStance>, PlayerMovementSpeedChange, EnemyCanSeePlayer<EnemyVision>>
 {
     [Header("Standing")]
     [SerializeField] float standingMultiplier = 2f;
@@ -19,7 +22,6 @@ public class EnemyVision : Subscriber<Event<PlayerStance>, PlayerMovementSpeedCh
 
     [Header("State Colors")]
     [SerializeField] Color normal = new(0.05f, 0.55f, 0.15f);
-    [SerializeField] Color aware = new(0.95f, 0.6f, 0.2f);
     [SerializeField] Color alert = new(0.75f, 0f, 0f);
 
     [Header("Other Settings")]
@@ -29,6 +31,7 @@ public class EnemyVision : Subscriber<Event<PlayerStance>, PlayerMovementSpeedCh
     [SerializeField] LayerMask layerMask;
 
     GameSession session;
+    IPubSub pubsub;
     GameObject player;
     Transform target;
     PlayerStance playerStance = PlayerStance.STANDING;
@@ -36,12 +39,12 @@ public class EnemyVision : Subscriber<Event<PlayerStance>, PlayerMovementSpeedCh
     float minPlayerSpeed = 0.1f;
     float playerSpeed = 0.1f;
     float seeMeter = 0f;
-    bool playerInFOV = false;
 
     new void Start()
     {
         base.Start();
         session = FindObjectOfType<GameSession>();
+        pubsub = session.Get<IPubSub>();
         player = session.GetPlayer();
         target = transform.parent.transform;
         sprite = target.gameObject.GetComponent<SpriteRenderer>();
@@ -50,28 +53,15 @@ public class EnemyVision : Subscriber<Event<PlayerStance>, PlayerMovementSpeedCh
     new void Update()
     {
         base.Update();
-        UpdateSeeMeter();
+        AdjustSeeMeter(-Time.deltaTime);
         UpdateTint();
-    }
-
-    void UpdateSeeMeter()
-    {
-        if (playerInFOV)
-        {
-            if (LineOfSite(out RaycastHit hit))
-            {
-                AdjustSeeMeter(CalculateSeeMeterChange(hit) * Time.deltaTime);
-            }
-            else AdjustSeeMeter(-Time.deltaTime);
-        }
-        else seeMeter = Mathf.Clamp(seeMeter - Time.deltaTime, 0f, 1f);
     }
 
     void UpdateTint()
     {
         sprite.color = Color.Lerp(
-            new Color(0.05f, 0.55f, 0.15f),
-            new Color(0.75f, 0f, 0f),
+            normal,
+            alert,
             seeMeter);
     }
 
@@ -88,9 +78,8 @@ public class EnemyVision : Subscriber<Event<PlayerStance>, PlayerMovementSpeedCh
         seeMeter = Mathf.Clamp(seeMeter + amount, 0f, 1f);
     }
 
-    float CalculateSeeMeterChange(RaycastHit hit)
+    float CalculateSeeMeterChange(float distance)
     {
-        float distance = hit.distance;
         float amount = 1f;
 
         if (playerStance == PlayerStance.STANDING)
@@ -113,17 +102,26 @@ public class EnemyVision : Subscriber<Event<PlayerStance>, PlayerMovementSpeedCh
         return amount / (distance * distanceMultiplier);
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.tag == playerTag) playerInFOV = true;
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.tag == playerTag) playerInFOV = false;
+        if (other.gameObject.CompareTag(playerTag)
+            && LineOfSite(out RaycastHit hit)
+            && hit.collider == other)
+        {
+            pubsub.Publish(new EnemyCanSeePlayer<EnemyVision>(
+                this,
+                gameObject.transform.position,
+                hit.point,
+                hit.distance));
+        }
     }
 
     public override void OnEvent(Event<PlayerStance> e) => playerStance = e.data;
     public override void OnEvent(PlayerMovementSpeedChange e) =>
         playerSpeed = Mathf.Clamp(e.data, minPlayerSpeed, float.MaxValue);
+    public override void OnEvent(EnemyCanSeePlayer<EnemyVision> e)
+    {
+        if (e.enemy == this)
+            AdjustSeeMeter(CalculateSeeMeterChange(e.distance));
+    }
 }

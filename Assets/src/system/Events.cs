@@ -1,4 +1,6 @@
-﻿namespace Game.System.Events
+﻿using UnityEngine;
+
+namespace Game.System.Events
 {
     public interface IEvent { }
 
@@ -23,6 +25,24 @@
         {
             public readonly bool data;
             public PlayerScopeChange(bool isScoping) => data = isScoping;
+        }
+    }
+
+    namespace Enemy
+    {
+        public struct EnemyCanSeePlayer<T> : IEvent
+        {
+            public readonly T enemy;
+            public readonly Vector3 origin;
+            public readonly Vector3 position;
+            public readonly float distance;
+            public EnemyCanSeePlayer(T enemy, Vector3 origin, Vector3 position, float distance)
+            {
+                this.enemy = enemy;
+                this.origin = origin;
+                this.position = position;
+                this.distance = distance;
+            }
         }
     }
 }
