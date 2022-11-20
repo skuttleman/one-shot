@@ -13,7 +13,6 @@ public class PlayerController :
     AttackModeChange.AttackMode mode;
     StanceChange.Stance stance;
     bool isMoving;
-    bool isAiming;
     bool isScoping;
 
     // movement modifiers
@@ -24,14 +23,15 @@ public class PlayerController :
     float rotationZ = 0f;
     float movementModifer = 1f;
 
-    void Start()
+    new void Start()
     {
-        Init();
+        base.Start();
         animator = GetComponent<Animator>();
     }
 
-    void Update()
+    new void Update()
     {
+        base.Update();
         RotatePlayer();
         MovePlayer();
     }
@@ -50,7 +50,7 @@ public class PlayerController :
         {
             float speed = movementModifer * StanceSpeed();
 
-            if (isAiming) speed *= 0.9f;
+            if (IsAiming()) speed *= 0.9f;
             else if (isScoping) speed *= 0.6f;
             float movementSpeed = Mathf.Max(
                 Mathf.Abs(movement.x),
@@ -97,7 +97,7 @@ public class PlayerController :
         else nextStance = StanceChange.Stance.CROUCHING;
 
         if (nextStance != StanceChange.Stance.CRAWLING
-            || (!isAiming && !isScoping)
+            || (!IsAiming() && !isScoping)
             || !isMoving)
         {
             stance = nextStance;
@@ -113,7 +113,9 @@ public class PlayerController :
         animator.SetBool("isScoping", isScoping);
     bool IsCrawling() => stance == StanceChange.Stance.CRAWLING;
     bool IsCrouching() => stance == StanceChange.Stance.CROUCHING;
-    bool IsMovable() => !IsCrawling() || (!isAiming && !isScoping);
+    bool IsAiming() => mode == AttackModeChange.AttackMode.WEAPON
+        || mode == AttackModeChange.AttackMode.FIRING;
+    bool IsMovable() => !IsCrawling() || (!IsAiming() && !isScoping);
     public override void OnEvent(ScopeChange e) => isScoping = e.isScoping;
     public override void OnEvent(StanceChange e) => stance = e.stance;
     public override void OnEvent(AttackModeChange e) => mode = e.mode;
@@ -124,5 +126,4 @@ public class PlayerController :
         mode != AttackModeChange.AttackMode.NONE
             && mode != AttackModeChange.AttackMode.FIRING
             && mode != AttackModeChange.AttackMode.PUNCHING;
-    private void OnDestroy() => Destroy();
 }

@@ -21,16 +21,17 @@ public class CameraController
     bool isMoving;
     bool isAiming;
 
-    void Start()
+    new void Start()
     {
-        Init();
+        base.Start();
         offset = GetComponent<CinemachineCameraOffset>();
         session = FindObjectOfType<GameSession>();
         target = session.GetTaggedObject(targetTag).transform;
     }
 
-    void Update()
+    new void Update()
     {
+        base.Update();
         SetOffset();
     }
 
@@ -54,6 +55,4 @@ public class CameraController
     public override void OnEvent(AttackModeChange e) =>
         isAiming = e.mode == AttackModeChange.AttackMode.WEAPON
             || e.mode == AttackModeChange.AttackMode.FIRING;
-
-    void OnDestroy() => Destroy();
 }

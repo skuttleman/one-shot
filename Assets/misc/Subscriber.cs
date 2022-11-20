@@ -2,23 +2,33 @@
 using System;
 using Game.System;
 using Game.System.Events;
-using Game.Utils;
+using System.Collections.Concurrent;
 
 namespace Game.Utils.Mono
 {
     public abstract class Subscriber<T> : MonoBehaviour
         where T : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
-        long sub;
+        long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
-            sub = pubsub.Subscribe<T>(OnEvent);
+            subs = new long[] {
+                pubsub.Subscribe<T>(e => q.Enqueue(e))
+            };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, sub);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
     }
 
@@ -26,19 +36,28 @@ namespace Game.Utils.Mono
         where T : IEvent
         where U : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
     }
@@ -48,20 +67,30 @@ namespace Game.Utils.Mono
         where U : IEvent
         where V : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent),
-                pubsub.Subscribe<V>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e)),
+                pubsub.Subscribe<V>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+                else if (e.GetType() == typeof(V)) OnEvent((V)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -73,21 +102,32 @@ namespace Game.Utils.Mono
         where V : IEvent
         where W : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent),
-                pubsub.Subscribe<V>(OnEvent),
-                pubsub.Subscribe<W>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e)),
+                pubsub.Subscribe<V>(e => q.Enqueue(e)),
+                pubsub.Subscribe<W>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+                else if (e.GetType() == typeof(V)) OnEvent((V)e);
+                else if (e.GetType() == typeof(W)) OnEvent((W)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -101,22 +141,34 @@ namespace Game.Utils.Mono
         where W : IEvent
         where X : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent),
-                pubsub.Subscribe<V>(OnEvent),
-                pubsub.Subscribe<W>(OnEvent),
-                pubsub.Subscribe<X>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e)),
+                pubsub.Subscribe<V>(e => q.Enqueue(e)),
+                pubsub.Subscribe<W>(e => q.Enqueue(e)),
+                pubsub.Subscribe<X>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+                else if (e.GetType() == typeof(V)) OnEvent((V)e);
+                else if (e.GetType() == typeof(W)) OnEvent((W)e);
+                else if (e.GetType() == typeof(X)) OnEvent((X)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -132,23 +184,36 @@ namespace Game.Utils.Mono
         where X : IEvent
         where Y : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent),
-                pubsub.Subscribe<V>(OnEvent),
-                pubsub.Subscribe<W>(OnEvent),
-                pubsub.Subscribe<X>(OnEvent),
-                pubsub.Subscribe<Y>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e)),
+                pubsub.Subscribe<V>(e => q.Enqueue(e)),
+                pubsub.Subscribe<W>(e => q.Enqueue(e)),
+                pubsub.Subscribe<X>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Y>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+                else if (e.GetType() == typeof(V)) OnEvent((V)e);
+                else if (e.GetType() == typeof(W)) OnEvent((W)e);
+                else if (e.GetType() == typeof(X)) OnEvent((X)e);
+                else if (e.GetType() == typeof(Y)) OnEvent((Y)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -166,24 +231,38 @@ namespace Game.Utils.Mono
         where Y : IEvent
         where Z : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent),
-                pubsub.Subscribe<V>(OnEvent),
-                pubsub.Subscribe<W>(OnEvent),
-                pubsub.Subscribe<X>(OnEvent),
-                pubsub.Subscribe<Y>(OnEvent),
-                pubsub.Subscribe<Z>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e)),
+                pubsub.Subscribe<V>(e => q.Enqueue(e)),
+                pubsub.Subscribe<W>(e => q.Enqueue(e)),
+                pubsub.Subscribe<X>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Y>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Z>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+                else if (e.GetType() == typeof(V)) OnEvent((V)e);
+                else if (e.GetType() == typeof(W)) OnEvent((W)e);
+                else if (e.GetType() == typeof(X)) OnEvent((X)e);
+                else if (e.GetType() == typeof(Y)) OnEvent((Y)e);
+                else if (e.GetType() == typeof(Z)) OnEvent((Z)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -203,25 +282,40 @@ namespace Game.Utils.Mono
         where Z : IEvent
         where A : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent),
-                pubsub.Subscribe<V>(OnEvent),
-                pubsub.Subscribe<W>(OnEvent),
-                pubsub.Subscribe<X>(OnEvent),
-                pubsub.Subscribe<Y>(OnEvent),
-                pubsub.Subscribe<Z>(OnEvent),
-                pubsub.Subscribe<A>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e)),
+                pubsub.Subscribe<V>(e => q.Enqueue(e)),
+                pubsub.Subscribe<W>(e => q.Enqueue(e)),
+                pubsub.Subscribe<X>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Y>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Z>(e => q.Enqueue(e)),
+                pubsub.Subscribe<A>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+                else if (e.GetType() == typeof(V)) OnEvent((V)e);
+                else if (e.GetType() == typeof(W)) OnEvent((W)e);
+                else if (e.GetType() == typeof(X)) OnEvent((X)e);
+                else if (e.GetType() == typeof(Y)) OnEvent((Y)e);
+                else if (e.GetType() == typeof(Z)) OnEvent((Z)e);
+                else if (e.GetType() == typeof(A)) OnEvent((A)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -243,26 +337,42 @@ namespace Game.Utils.Mono
         where A : IEvent
         where B : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent),
-                pubsub.Subscribe<V>(OnEvent),
-                pubsub.Subscribe<W>(OnEvent),
-                pubsub.Subscribe<X>(OnEvent),
-                pubsub.Subscribe<Y>(OnEvent),
-                pubsub.Subscribe<Z>(OnEvent),
-                pubsub.Subscribe<A>(OnEvent),
-                pubsub.Subscribe<B>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e)),
+                pubsub.Subscribe<V>(e => q.Enqueue(e)),
+                pubsub.Subscribe<W>(e => q.Enqueue(e)),
+                pubsub.Subscribe<X>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Y>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Z>(e => q.Enqueue(e)),
+                pubsub.Subscribe<A>(e => q.Enqueue(e)),
+                pubsub.Subscribe<B>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+                else if (e.GetType() == typeof(V)) OnEvent((V)e);
+                else if (e.GetType() == typeof(W)) OnEvent((W)e);
+                else if (e.GetType() == typeof(X)) OnEvent((X)e);
+                else if (e.GetType() == typeof(Y)) OnEvent((Y)e);
+                else if (e.GetType() == typeof(Z)) OnEvent((Z)e);
+                else if (e.GetType() == typeof(A)) OnEvent((A)e);
+                else if (e.GetType() == typeof(B)) OnEvent((B)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -286,27 +396,44 @@ namespace Game.Utils.Mono
         where B : IEvent
         where C : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent),
-                pubsub.Subscribe<V>(OnEvent),
-                pubsub.Subscribe<W>(OnEvent),
-                pubsub.Subscribe<X>(OnEvent),
-                pubsub.Subscribe<Y>(OnEvent),
-                pubsub.Subscribe<Z>(OnEvent),
-                pubsub.Subscribe<A>(OnEvent),
-                pubsub.Subscribe<B>(OnEvent),
-                pubsub.Subscribe<C>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e)),
+                pubsub.Subscribe<V>(e => q.Enqueue(e)),
+                pubsub.Subscribe<W>(e => q.Enqueue(e)),
+                pubsub.Subscribe<X>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Y>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Z>(e => q.Enqueue(e)),
+                pubsub.Subscribe<A>(e => q.Enqueue(e)),
+                pubsub.Subscribe<B>(e => q.Enqueue(e)),
+                pubsub.Subscribe<C>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+                else if (e.GetType() == typeof(V)) OnEvent((V)e);
+                else if (e.GetType() == typeof(W)) OnEvent((W)e);
+                else if (e.GetType() == typeof(X)) OnEvent((X)e);
+                else if (e.GetType() == typeof(Y)) OnEvent((Y)e);
+                else if (e.GetType() == typeof(Z)) OnEvent((Z)e);
+                else if (e.GetType() == typeof(A)) OnEvent((A)e);
+                else if (e.GetType() == typeof(B)) OnEvent((B)e);
+                else if (e.GetType() == typeof(C)) OnEvent((C)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);
@@ -332,28 +459,46 @@ namespace Game.Utils.Mono
         where C : IEvent
         where D : IEvent
     {
+        ConcurrentQueue<IEvent> q;
         IPubSub pubsub;
         long[] subs;
 
-        protected void Init()
+        protected void Start()
         {
+            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
             subs = new long[] {
-                pubsub.Subscribe<T>(OnEvent),
-                pubsub.Subscribe<U>(OnEvent),
-                pubsub.Subscribe<V>(OnEvent),
-                pubsub.Subscribe<W>(OnEvent),
-                pubsub.Subscribe<X>(OnEvent),
-                pubsub.Subscribe<Y>(OnEvent),
-                pubsub.Subscribe<Z>(OnEvent),
-                pubsub.Subscribe<A>(OnEvent),
-                pubsub.Subscribe<B>(OnEvent),
-                pubsub.Subscribe<C>(OnEvent),
-                pubsub.Subscribe<D>(OnEvent)
+                pubsub.Subscribe<T>(e => q.Enqueue(e)),
+                pubsub.Subscribe<U>(e => q.Enqueue(e)),
+                pubsub.Subscribe<V>(e => q.Enqueue(e)),
+                pubsub.Subscribe<W>(e => q.Enqueue(e)),
+                pubsub.Subscribe<X>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Y>(e => q.Enqueue(e)),
+                pubsub.Subscribe<Z>(e => q.Enqueue(e)),
+                pubsub.Subscribe<A>(e => q.Enqueue(e)),
+                pubsub.Subscribe<B>(e => q.Enqueue(e)),
+                pubsub.Subscribe<C>(e => q.Enqueue(e)),
+                pubsub.Subscribe<D>(e => q.Enqueue(e))
             };
         }
 
-        protected void Destroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
+        protected void Update()
+        {
+            while (q.TryDequeue(out IEvent e))
+                if (e.GetType() == typeof(T)) OnEvent((T)e);
+                else if (e.GetType() == typeof(U)) OnEvent((U)e);
+                else if (e.GetType() == typeof(V)) OnEvent((V)e);
+                else if (e.GetType() == typeof(W)) OnEvent((W)e);
+                else if (e.GetType() == typeof(X)) OnEvent((X)e);
+                else if (e.GetType() == typeof(Y)) OnEvent((Y)e);
+                else if (e.GetType() == typeof(Z)) OnEvent((Z)e);
+                else if (e.GetType() == typeof(A)) OnEvent((A)e);
+                else if (e.GetType() == typeof(B)) OnEvent((B)e);
+                else if (e.GetType() == typeof(C)) OnEvent((C)e);
+                else if (e.GetType() == typeof(D)) OnEvent((D)e);
+        }
+
+        protected void OnDestroy() => SubscriberUtils.Unsubscribe(pubsub, subs);
         public abstract void OnEvent(T e);
         public abstract void OnEvent(U e);
         public abstract void OnEvent(V e);

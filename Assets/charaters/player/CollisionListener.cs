@@ -7,14 +7,12 @@ public class CollisionListener : Subscriber<StanceChange>
     [SerializeField] StanceChange.Stance stance;
     BoxCollider collide;
 
-    void Start()
+    new void Start()
     {
-        Init();
+        base.Start();
         collide = GetComponent<BoxCollider>();
     }
 
     public override void OnEvent(StanceChange e) =>
         collide.enabled = e.stance == stance;
-
-    void OnDestroy() => Destroy();
 }

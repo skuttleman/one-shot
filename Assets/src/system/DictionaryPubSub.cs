@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using Game.System;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Game.Utils;
 using Game.System.Events;
+using System.Collections.Concurrent;
 
 namespace Game.System
 {
@@ -12,20 +10,20 @@ namespace Game.System
     {
         IDictionary<Type, IDictionary<long, Action<IEvent>>> actions;
         IDictionary<long, Type> subscribers;
-        readonly Queue<IEvent> q;
+        readonly ConcurrentQueue<IEvent> q;
 
         long subId = 0;
 
-        public void Tick()
+        public void Tick(GameSession _)
         {
-            while (q.Count > 0) PublishEvent(q.Dequeue());
+            while (q.TryDequeue(out IEvent e)) PublishEvent(e);
         }
 
         public DictionaryPubSub()
         {
             actions = new Dictionary<Type, IDictionary<long, Action<IEvent>>>();
             subscribers = new Dictionary<long, Type>();
-            q = new Queue<IEvent>();
+            q = new ConcurrentQueue<IEvent>();
         }
 
         public IPubSub Publish<T>(T e) where T : IEvent

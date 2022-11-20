@@ -1,15 +1,16 @@
 using UnityEngine;
-using System.Collections;
 using Game.System;
 using System;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using Game.Utils;
+using System.Threading;
 
 public class GameSession : MonoBehaviour
 {
     IDictionary<string, ISet<GameObject>> taggedObjects;
     GameSystem system;
+    IDictionary<Type, Thread> threads;
 
     public void RegisterTags(IEnumerable<string> tags, GameObject obj)
     {
@@ -30,9 +31,20 @@ public class GameSession : MonoBehaviour
         return Sequences.First(objects);
     }
 
-    public T Get<T>() => system.Get<T>();
     public ISet<GameObject> GetTaggedObjects(string tag) => Colls.Get(taggedObjects, tag);
     public GameObject GetPlayer() => GetTaggedObject("player");
+    public T Get<T>() => system.Get<T>();
+    public void Register<T>(T component) where T : IComponent
+    {
+        StartComponent(typeof(T), component);
+        system.Register(component);
+    }
+
+    public void Unregister<T>()
+    {
+        system.Unregister(typeof(T));
+        StopComponent(typeof(T));
+    }
 
     void Awake()
     {
@@ -42,22 +54,38 @@ public class GameSession : MonoBehaviour
             return;
         }
         DontDestroyOnLoad(gameObject);
-        system = GameSystem.Default();
+        system = GameSystem.Default(this);
         taggedObjects = new Dictionary<string, ISet<GameObject>>();
+        threads = new Dictionary<Type, Thread>();
+        Sequences.ForEach(system, tpl => StartComponent(tpl.Item1, tpl.Item2));
     }
 
     void Start()
     {
-        StartCoroutine(UpdateComponents());
+
     }
 
-
-    IEnumerator UpdateComponents()
+    void StartComponent(Type type, IComponent component)
     {
-        while (true)
-        {
-            foreach (IComponent component in system.Components()) component.Tick();
-            yield return new WaitForEndOfFrame();
-        }
+        if (threads.ContainsKey(type))
+            throw new NotSupportedException("component has already been started");
+
+        threads[type] = new(new ThreadStart(() =>
+            {
+                while (true)
+                {
+                    component.Tick(this);
+                    Thread.Sleep(1);
+                }
+            }));
+        threads[type].Start();
     }
+
+    void StopComponent(Type type)
+    {
+        Thread thread = Colls.Get(threads, type);
+        if (thread != null) thread.Abort();
+    }
+
+    void OnDestroy() => Sequences.ForEach(system, tpl => StopComponent(tpl.Item1));
 }

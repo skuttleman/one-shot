@@ -37,17 +37,18 @@ public class EnemyVision : Subscriber<StanceChange, MovementSpeedChange>
     float seeMeter = 0f;
     bool playerInFOV = false;
 
-    void Start()
+    new void Start()
     {
-        Init();
+        base.Start();
         session = FindObjectOfType<GameSession>();
         player = session.GetPlayer();
         target = transform.parent.transform;
         sprite = target.gameObject.GetComponent<SpriteRenderer>();
     }
 
-    void Update()
+    new void Update()
     {
+        base.Update();
         UpdateSeeMeter();
         UpdateTint();
     }
@@ -124,6 +125,4 @@ public class EnemyVision : Subscriber<StanceChange, MovementSpeedChange>
     public override void OnEvent(StanceChange e) => playerStance = e.stance;
     public override void OnEvent(MovementSpeedChange e) =>
         playerSpeed = Mathf.Clamp(e.speed, minPlayerSpeed, float.MaxValue);
-
-    void OnDestroy() => Destroy();
 }

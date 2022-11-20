@@ -263,6 +263,7 @@ MonoBehaviour:
   fov: 300
   viewDistance: 4
   startingAngle: 240
+  drawDelay: 0.1
 --- !u!33 &77772276
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1502,6 +1503,9 @@ MonoBehaviour:
   crouchingMaxDistance: 4
   crawlingMultiplier: 0.25
   crawlingMaxDistance: 3
+  normal: {r: 0.05, g: 0.55, b: 0.15, a: 1}
+  aware: {r: 0.95, g: 0.6, b: 0.2, a: 1}
+  alert: {r: 0.75, g: 0, b: 0, a: 1}
   speedMultiplier: 5
   distanceMultiplier: 1
   playerTag: Player
