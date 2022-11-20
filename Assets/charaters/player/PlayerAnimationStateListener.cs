@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class PlayerAnimationStateListener : MonoBehaviour
 {
-    Animator animator;
     GameSession session;
+    Animator animator;
+    Footstep footstep;
+
     IPubSub pubsub;
     PlayerStance stance;
     PlayerAttackMode mode;
@@ -15,8 +17,9 @@ public class PlayerAnimationStateListener : MonoBehaviour
 
     void Start()
     {
-        animator = GetComponent<Animator>();
         session = FindObjectOfType<GameSession>();
+        animator = GetComponent<Animator>();
+        footstep = GetComponentInChildren<Footstep>();
         pubsub = session.Get<IPubSub>();
     }
 
@@ -51,5 +54,20 @@ public class PlayerAnimationStateListener : MonoBehaviour
         isScoping = isScoped;
     }
 
-    public void OnStep() { }
+    public void OnStep() {
+        if (footstep)
+        {
+            StartCoroutine(
+                Instantiate(footstep.gameObject, transform.position, transform.rotation)
+                    .GetComponent<Footstep>()
+                    .Go((speed + 1f) * StanceSpeed()));
+        }
+    }
+
+    private float StanceSpeed()
+    {
+        if (stance == PlayerStance.STANDING) return 2f;
+        else if (stance == PlayerStance.CRAWLING) return 0.5f;
+        return 1f;
+    }
 }
