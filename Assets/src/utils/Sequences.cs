@@ -148,6 +148,7 @@ namespace Game.Utils {
         private readonly IEnumerable<T> coll;
 
         public static Sequence<T> Of(IEnumerable<T> coll) => new(coll);
+        public static Sequence<T> Empty() => Of(new T[] { });
 
         public T First() => Sequences.First(coll);
         public Sequence<T> Rest() => Sequences.Rest(coll);

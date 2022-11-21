@@ -7,5 +7,11 @@ namespace Game.Utils {
                 if (set.Contains(item)) return true;
             return false;
         }
+
+        public static ISet<T> Of<T>(params T[] items) {
+            ISet<T> set = new HashSet<T>();
+            foreach (T item in items) set.Add(item);
+            return set;
+        }
     }
 }

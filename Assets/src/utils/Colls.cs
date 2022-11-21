@@ -7,6 +7,20 @@ namespace Game.Utils {
             coll.Add(item);
             return coll;
         }
+        public static ISet<T> Remove<T>(ISet<T> set, T item) {
+            if (set != null && set.Contains(item)) set.Remove(item);
+            return set;
+        }
+        public static IDictionary<K, V> Remove<K, V>(IDictionary<K, V> dict, K key) {
+            if (dict != null && dict.ContainsKey(key)) dict.Remove(key);
+            return dict;
+        }
+        public static IDictionary<K, V> Update<K, V>(
+            IDictionary<K, V> dict, K key, Func<V, V> fn) {
+
+            dict[key] = fn(dict.ContainsKey(key) ? dict[key] : default);
+            return dict;
+        }
 
         public static Func<T, U> Fn<T, U>(IDictionary<T, U> dict) =>
             item => dict.ContainsKey(item) ? dict[item] : default;
