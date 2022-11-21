@@ -53,8 +53,6 @@ public class GameSession : MonoBehaviour {
     }
 
     void Start() {
-        // TODO - nocommit
-        InputSystem.DisableDevice(Mouse.current);
     }
 
     void StartComponent(Type type, IComponent component) {

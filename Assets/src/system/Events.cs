@@ -24,7 +24,7 @@ namespace Game.System.Events {
     }
 
     namespace Enemy {
-        public struct EnemyCanSeePlayer<T> : IEvent {
+        public struct EnemyCanSeePlayer<T> : IEvent where T : MonoBehaviour {
             public readonly T enemy;
             public readonly Vector3 origin;
             public readonly Vector3 position;
@@ -35,6 +35,15 @@ namespace Game.System.Events {
                 this.position = position;
                 this.distance = distance;
             }
+
+            public EnemyCanSeePlayer<T> Enemy(T enemy) =>
+                new(enemy, origin, position, distance);
+            public EnemyCanSeePlayer<T> Origin(Vector3 origin) =>
+                new(enemy, origin, position, distance);
+            public EnemyCanSeePlayer<T> Position(Vector3 position) =>
+                new(enemy, origin, position, distance);
+            public EnemyCanSeePlayer<T> Distance(float distance) =>
+                new(enemy, origin, position, distance);
         }
     }
 }

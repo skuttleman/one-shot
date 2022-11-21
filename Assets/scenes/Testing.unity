@@ -570,7 +570,7 @@ MonoBehaviour:
   m_Follow: {fileID: 1269581574}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 3.75
+    OrthographicSize: 8
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -761,6 +761,7 @@ GameObject:
   - component: {fileID: 730641514}
   - component: {fileID: 730641516}
   - component: {fileID: 730641515}
+  - component: {fileID: 730641517}
   m_Layer: 8
   m_Name: Dumbeny
   m_TagString: Untagged
@@ -889,10 +890,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 965d935d553b7422eb80aab63aeb82c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  position1: {x: -4, y: 1, z: 0}
-  position2: {x: -1, y: -1, z: 0}
   patrolSpeed: 0.25
   rotationSpeed: 3.5
+  patrolSteps:
+  - position: {x: -4, y: -4, z: -0.1}
+    waitAfter: 0.5
+    isLook: 1
+  - position: {x: -4, y: 1, z: -0.1}
+    waitAfter: 2.5
+    isLook: 0
+  - position: {x: 4, y: 4, z: -0.1}
+    waitAfter: 2.5
+    isLook: 0
+  - position: {x: 2, y: -1, z: -0.1}
+    waitAfter: 0
+    isLook: 1
+  - position: {x: -2, y: 1, z: -0.1}
+    waitAfter: 1
+    isLook: 1
 --- !u!95 &730641516
 Animator:
   serializedVersion: 4
@@ -913,6 +928,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &730641517
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730641509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c64f724568fd4e58a6cadef3c87def1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &754100079
 GameObject:
   m_ObjectHideFlags: 0
@@ -1057,11 +1084,11 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 6b2bd5aba03a0423bac70c1858b2dbe4, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6862745, g: 0.6862745, b: 0.6862745, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 16, y: 9}
+  m_Size: {x: 32, y: 18}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 1
   m_WasSpriteAssigned: 1
@@ -2318,7 +2345,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -2335,7 +2362,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 3.75
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
