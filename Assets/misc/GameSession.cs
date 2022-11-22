@@ -7,6 +7,8 @@ using Game.Utils;
 using System.Threading.Tasks;
 using System.Threading;
 
+namespace System.Runtime.CompilerServices { public class IsExternalInit { } }
+
 public class GameSession : MonoBehaviour {
     IDictionary<string, ISet<GameObject>> taggedObjects;
     GameSystem system;

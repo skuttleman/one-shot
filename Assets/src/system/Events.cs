@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 
-namespace System.Runtime.CompilerServices { public class IsExternalInit { } }
-
 namespace Game.System.Events {
     public interface IEvent { }
 
