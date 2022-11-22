@@ -11,15 +11,22 @@ namespace System.Runtime.CompilerServices { public class IsExternalInit { } }
 
 public class GameSession : MonoBehaviour {
     IDictionary<string, ISet<GameObject>> taggedObjects;
+    IDictionary<GameObject, ISet<string>> objectTags;
     GameSystem system;
     IDictionary<Type, Task> tasks;
 
     public void RegisterTags(IEnumerable<string> tags, GameObject obj) {
         Sequences.ForEach(tags, tag => {
-            ISet<GameObject> objects = new HashSet<GameObject>();
-            if (taggedObjects.ContainsKey(tag)) objects = taggedObjects[tag];
-            else taggedObjects[tag] = objects;
-            if (!objects.Contains(obj)) objects.Add(obj);
+            Colls.Update(
+                taggedObjects,
+                tag,
+                objs => Colls.Add(objs, obj),
+                () => new HashSet<GameObject>());
+            Colls.Update(
+                objectTags,
+                obj,
+                tags => Colls.Add(tags, tag),
+                () => new HashSet<string>());
         });
     }
 
@@ -30,9 +37,11 @@ public class GameSession : MonoBehaviour {
         return Sequences.First(objects);
     }
 
+    public ISet<string> GetObjectTags(GameObject obj) => Colls.Get(objectTags, obj);
     public ISet<GameObject> GetTaggedObjects(string tag) => Colls.Get(taggedObjects, tag);
     public GameObject GetPlayer() => GetTaggedObject("player");
     public T Get<T>() => system.Get<T>();
+
     public void Register<T>(T component) where T : IComponent {
         StartComponent(typeof(T), component);
         system.Register(component);
@@ -51,6 +60,7 @@ public class GameSession : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
         system = GameSystem.Default(this);
         taggedObjects = new Dictionary<string, ISet<GameObject>>();
+        objectTags = new Dictionary<GameObject, ISet<string>>();
         tasks = new Dictionary<Type, Task>();
         Sequences.ForEach(system, tpl => StartComponent(tpl.Item1, tpl.Item2));
     }

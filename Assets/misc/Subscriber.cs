@@ -8,12 +8,12 @@ namespace Game.Utils.Mono {
     public abstract class Subscriber<T> : MonoBehaviour
         where T : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e))
             };
@@ -32,12 +32,12 @@ namespace Game.Utils.Mono {
         where T : IEvent
         where U : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e))
@@ -60,12 +60,12 @@ namespace Game.Utils.Mono {
         where U : IEvent
         where V : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e)),
@@ -92,12 +92,12 @@ namespace Game.Utils.Mono {
         where V : IEvent
         where W : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e)),
@@ -128,12 +128,12 @@ namespace Game.Utils.Mono {
         where W : IEvent
         where X : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e)),
@@ -168,12 +168,12 @@ namespace Game.Utils.Mono {
         where X : IEvent
         where Y : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e)),
@@ -212,12 +212,12 @@ namespace Game.Utils.Mono {
         where Y : IEvent
         where Z : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e)),
@@ -260,12 +260,12 @@ namespace Game.Utils.Mono {
         where Z : IEvent
         where A : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e)),
@@ -312,12 +312,12 @@ namespace Game.Utils.Mono {
         where A : IEvent
         where B : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e)),
@@ -368,12 +368,12 @@ namespace Game.Utils.Mono {
         where B : IEvent
         where C : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e)),
@@ -428,12 +428,12 @@ namespace Game.Utils.Mono {
         where C : IEvent
         where D : IEvent {
         ConcurrentQueue<IEvent> q;
-        internal IPubSub pubsub;
+        internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
             q = new();
-            pubsub = FindObjectOfType<GameSession>().Get<IPubSub>();
+            pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e)),
                 pubsub.Subscribe<U>(e => q.Enqueue(e)),
@@ -479,7 +479,7 @@ namespace Game.Utils.Mono {
     }
 
     static class SubscriberUtils {
-        public static void Unsubscribe(IPubSub pubsub, params long[] subs) {
+        public static void Unsubscribe(IPubSub<IEvent> pubsub, params long[] subs) {
             Sequences.ForEach(subs, sub => {
                 try {
                     pubsub.Unsubscribe(sub);

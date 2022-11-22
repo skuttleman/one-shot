@@ -5,11 +5,12 @@ using Game.System.Events;
 using System.Collections.Concurrent;
 
 namespace Game.System {
-    public class DictionaryPubSub : IComponent, IPubSub {
+    public class DictionaryPubSub : IComponent, IPubSub<IEvent> {
         IDictionary<Type, IDictionary<long, Action<IEvent>>> actions;
         IDictionary<long, Type> subscribers;
         readonly ConcurrentQueue<IEvent> q;
 
+        readonly object idLock = new();
         long subId = 0;
 
         public void Tick(GameSession _) {
@@ -22,30 +23,32 @@ namespace Game.System {
             q = new ConcurrentQueue<IEvent>();
         }
 
-        public IPubSub Publish<T>(T e) where T : IEvent {
+        public IPubSub<IEvent> Publish<T>(T e) where T : IEvent {
             q.Enqueue(e);
             return this;
         }
 
-        public IPubSub PublishSync<T>(T e) where T : IEvent {
+        public IPubSub<IEvent> PublishSync<T>(T e) where T : IEvent {
             PublishEvent(e);
             return this;
         }
 
         public long Subscribe<T>(Action<T> action) where T : IEvent {
-            long id = ++subId;
+            lock (idLock) {
+                ++subId;
+            }
             Type t = typeof(T);
             IDictionary<long, Action<IEvent>> dict = actions.ContainsKey(t)
                 ? actions[t]
                 : new Dictionary<long, Action<IEvent>>();
-            subscribers[id] = t;
-            dict[id] = e => action((T)e);
+            subscribers[subId] = t;
+            dict[subId] = e => action((T)e);
             actions[t] = dict;
 
-            return id;
+            return subId;
         }
 
-        public IPubSub Unsubscribe(long subscription) {
+        public IPubSub<IEvent> Unsubscribe(long subscription) {
             Type t = subscribers.ContainsKey(subscription) ? subscribers[subscription] : null;
             if (t != null) {
                 IDictionary<long, Action<IEvent>> dict = actions[t];

@@ -8,7 +8,7 @@ public class PlayerAnimationStateListener : MonoBehaviour {
 
     GameSession session;
     Animator animator;
-    IPubSub pubsub;
+    IPubSub<IEvent> pubsub;
     PlayerStance stance;
     PlayerAttackMode mode;
     float speed;
@@ -17,7 +17,7 @@ public class PlayerAnimationStateListener : MonoBehaviour {
     void Start() {
         session = FindObjectOfType<GameSession>();
         animator = GetComponent<Animator>();
-        pubsub = session.Get<IPubSub>();
+        pubsub = session.Get<IPubSub<IEvent>>();
     }
 
     void Publish<T>(bool condition, T e) where T : IEvent {

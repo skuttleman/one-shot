@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Game.Utils;
 using System.Collections;
+using Game.System.Events;
 
 public class GameSystem : IEnumerable<(Type, IComponent)> {
     private readonly IDictionary<Type, IComponent> components;
@@ -33,7 +34,7 @@ public class GameSystem : IEnumerable<(Type, IComponent)> {
         return new GameSystem(
             new Dictionary<Type, IComponent>
             {
-                { typeof(IPubSub), pubsub },
+                { typeof(IPubSub<IEvent>), pubsub },
             });
     }
 
