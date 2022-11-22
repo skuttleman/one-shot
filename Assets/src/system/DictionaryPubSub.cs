@@ -56,7 +56,7 @@ namespace Game.System {
         }
 
         void PublishEvent(IEvent e) {
-            Sequences.ForEach(actions[e.GetType()], entry => entry.Value(e));
+            Sequences.ForEach(Colls.Get(actions, e.GetType()), entry => entry.Value(e));
         }
     }
 }

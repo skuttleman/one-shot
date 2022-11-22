@@ -16,11 +16,14 @@ namespace Game.Utils {
             return dict;
         }
         public static IDictionary<K, V> Update<K, V>(
-            IDictionary<K, V> dict, K key, Func<V, V> fn) {
+            IDictionary<K, V> dict, K key, Func<V, V> fn, Func<V> gen) {
 
-            dict[key] = fn(dict.ContainsKey(key) ? dict[key] : default);
+            dict[key] = fn(dict.ContainsKey(key) ? dict[key] : gen());
             return dict;
         }
+        public static IDictionary<K, V> Update<K, V>(
+            IDictionary<K, V> dict, K key, Func<V, V> fn) =>
+            Update(dict, key, fn, default);
 
         public static Func<T, U> Fn<T, U>(IDictionary<T, U> dict) =>
             item => dict.ContainsKey(item) ? dict[item] : default;

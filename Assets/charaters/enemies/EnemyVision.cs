@@ -2,7 +2,6 @@ using UnityEngine;
 using Game.System.Events.Player;
 using Game.Utils.Mono;
 using Game.System.Events;
-using Game.System;
 using Game.System.Events.Enemy;
 
 public class EnemyVision :
@@ -30,7 +29,6 @@ public class EnemyVision :
     [SerializeField] LayerMask layerMask;
 
     GameSession session;
-    IPubSub pubsub;
     GameObject player;
     Transform target;
     PlayerStance playerStance = PlayerStance.STANDING;
@@ -42,7 +40,6 @@ public class EnemyVision :
     new void Start() {
         base.Start();
         session = FindObjectOfType<GameSession>();
-        pubsub = session.Get<IPubSub>();
         player = session.GetPlayer();
         target = transform.parent.transform;
         sprite = target.gameObject.GetComponent<SpriteRenderer>();

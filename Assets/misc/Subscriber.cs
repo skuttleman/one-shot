@@ -8,7 +8,7 @@ namespace Game.Utils.Mono {
     public abstract class Subscriber<T> : MonoBehaviour
         where T : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -32,7 +32,7 @@ namespace Game.Utils.Mono {
         where T : IEvent
         where U : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -60,7 +60,7 @@ namespace Game.Utils.Mono {
         where U : IEvent
         where V : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -92,7 +92,7 @@ namespace Game.Utils.Mono {
         where V : IEvent
         where W : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -128,7 +128,7 @@ namespace Game.Utils.Mono {
         where W : IEvent
         where X : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -168,7 +168,7 @@ namespace Game.Utils.Mono {
         where X : IEvent
         where Y : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -212,7 +212,7 @@ namespace Game.Utils.Mono {
         where Y : IEvent
         where Z : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -260,7 +260,7 @@ namespace Game.Utils.Mono {
         where Z : IEvent
         where A : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -312,7 +312,7 @@ namespace Game.Utils.Mono {
         where A : IEvent
         where B : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -368,7 +368,7 @@ namespace Game.Utils.Mono {
         where B : IEvent
         where C : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
@@ -428,7 +428,7 @@ namespace Game.Utils.Mono {
         where C : IEvent
         where D : IEvent {
         ConcurrentQueue<IEvent> q;
-        IPubSub pubsub;
+        internal IPubSub pubsub;
         long[] subs;
 
         protected void Start() {
