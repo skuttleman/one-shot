@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Game.Utils {
     public delegate Reduction<A> RF<A, I>(Reduction<A> acc, I item);
+    public delegate RF<A, O> XForm<A, O, I>(RF<A, I> rf);
 
     public static class Fns {
         public static Predicate<T> Compliment<T>(Predicate<T> pred) =>
@@ -13,19 +14,27 @@ namespace Game.Utils {
             t => action(fn(t));
         public static T Identity<T>(T item) => item;
 
-        public static Func<RF<A, O>, RF<A, I>> MapCat<A, I, O>(Func<I, IEnumerable<O>> mapFn) =>
+        public static XForm<A, I, O> MapCat<A, I, O>(Func<I, IEnumerable<O>> mapFn) =>
             rf => (acc, item) => mapFn(item).Reduce((a, i) => rf(a, i), acc);
-        public static Func<RF<A, O>, RF<A, I>> Map<A, I, O>(Func<I, O> fn) =>
+        public static XForm<A, I, O> Map<A, I, O>(Func<I, O> fn) =>
             rf => (acc, item) => rf(acc, fn(item));
-        public static Func<RF<A, I>, RF<A, I>> Filter<A, I>(Predicate<I> pred) =>
+        public static XForm<A, I, I> Filter<A, I>(Predicate<I> pred) =>
             rf => (acc, item) => pred(item) ? acc : rf(acc, item);
-        public static Func<RF<A, I>, RF<A, I>> Remove<A, I>(Predicate<I> pred) =>
+        public static XForm<A, I, I> Remove<A, I>(Predicate<I> pred) =>
             Filter<A, I>(Compliment(pred));
-        public static Func<RF<A, I>, RF<A, I>> Take<A, I>(long n) => rf => {
+        public static XForm<A, I, I> Take<A, I>(long n) => rf => {
             long items = n;
             return (acc, item) =>
                 items-- > 0 ? rf(acc, item) : Reduction<A>.Reduced(acc.Get());
         };
+        public static XForm<A, I, I> Drop<A, I>(long n) => rf => {
+            long items = n;
+            return (acc, item) =>
+                items-- <= 0 ? rf(acc, item) : Reduction<A>.Reduced(acc.Get());
+        };
+        public static XForm<A, I, O> Comp<A, I, M, O>(
+            this XForm<A, I, M> xform1,
+            XForm<A, M, O> xform2) => rf => xform1(xform2(rf));
     }
 
     public class MultiMethod<T, U, R> {

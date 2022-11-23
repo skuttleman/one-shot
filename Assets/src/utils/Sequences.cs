@@ -95,7 +95,7 @@ namespace Game.Utils {
         // transduction
         public static A Transduce<A, I, O>(
             this IEnumerable<I> coll,
-            Func<RF<A, O>, RF<A, I>> xform,
+            XForm<A, I, O> xform,
             Func<A, O, A> reducer,
             A init) {
             RF<A, I> reduceFn = xform((red, item) => red.IsReduced() ?
