@@ -37,13 +37,10 @@ namespace Game.Utils {
             return default;
         }
 
-        public static Sequence<long> Range() => Sequences.Iterate(0L, x => x + 1);
-        public static Sequence<long> Range(long end) => Range(0L, end);
-        public static Sequence<long> Range(long start, long end) => Range(start, end, 1L);
-        public static Sequence<long> Range(long start, long end, long jump) =>
-            Sequence<long>.Of(RangeEnumerable(start, end, jump));
-
-        private static IEnumerable<long> RangeEnumerable(long start, long end, long jump) {
+        public static IEnumerable<long> Range() => Sequences.Iterate(0L, x => x + 1);
+        public static IEnumerable<long> Range(long end) => Range(0L, end);
+        public static IEnumerable<long> Range(long start, long end) => Range(start, end, 1L);
+        public static IEnumerable<long> Range(long start, long end, long jump) {
             for (long i = start; i < end; i += jump)
                 yield return i;
         }

@@ -4,12 +4,12 @@ using Game.Utils;
 
 public class DictionaryFSM<State, Signal> : IFSM<State, Signal> {
     private static readonly string invalidTransitionFmt = "no valid transitions from {0} with signal {1}";
-    private readonly Sequence<FSMDetails<State, Signal>> details;
+    private readonly IEnumerable<FSMDetails<State, Signal>> details;
     private readonly IDictionary<State, ISet<Signal>> signals;
 
     public DictionaryFSM(IEnumerable<FSMDetails<State, Signal>> details) {
-        this.details = Sequence<FSMDetails<State, Signal>>.Of(details);
-        signals = this.details.Reduce(
+        this.details = details;
+        signals = details.Reduce(
             (acc, detail) => Colls.Update(
                 acc,
                 detail.state,
@@ -25,7 +25,7 @@ public class DictionaryFSM<State, Signal> : IFSM<State, Signal> {
 
     public ISet<Signal> Signals(State state) => Colls.Get(signals, state);
     public State Apply(State state, Signal signal) {
-        Sequence<FSMDetails<State, Signal>> transitions = details
+        IEnumerable<FSMDetails<State, Signal>> transitions = details
             .Filter(detail => detail.state.Equals(state) && detail.signal.Equals(signal));
         return ApplySignal(state, signal, transitions);
     }
@@ -33,7 +33,7 @@ public class DictionaryFSM<State, Signal> : IFSM<State, Signal> {
     public static State ApplySignal(
         State state,
         Signal signal,
-        Sequence<FSMDetails<State, Signal>> details) {
+        IEnumerable<FSMDetails<State, Signal>> details) {
 
         foreach (FSMDetails<State, Signal> detail in details) {
             if (detail.guard?.Invoke(state, signal) ?? true) {

@@ -83,7 +83,9 @@ public class GameSession : MonoBehaviour {
 
     void StopComponent(Type type) {
         Task task = Colls.Get(tasks, type);
-        if (task != null) task.Dispose();
+        try {
+            task.Dispose();
+        } catch (Exception) { }
     }
 
     void OnDestroy() => Sequences.ForEach(system, tpl => StopComponent(tpl.Item1));
