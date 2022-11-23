@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Game.Utils {
     public delegate Reduction<A> RF<A, I>(Reduction<A> acc, I item);
-    public delegate RF<A, O> XForm<A, O, I>(RF<A, I> rf);
 
     public static class Fns {
         public static Predicate<T> Compliment<T>(Predicate<T> pred) =>
@@ -14,27 +13,56 @@ namespace Game.Utils {
             t => action(fn(t));
         public static T Identity<T>(T item) => item;
 
-        public static XForm<A, I, O> MapCat<A, I, O>(Func<I, IEnumerable<O>> mapFn) =>
-            rf => (acc, item) => mapFn(item).Reduce((a, i) => rf(a, i), acc);
-        public static XForm<A, I, O> Map<A, I, O>(Func<I, O> fn) =>
-            rf => (acc, item) => rf(acc, fn(item));
-        public static XForm<A, I, I> Filter<A, I>(Predicate<I> pred) =>
-            rf => (acc, item) => pred(item) ? acc : rf(acc, item);
-        public static XForm<A, I, I> Remove<A, I>(Predicate<I> pred) =>
-            Filter<A, I>(Compliment(pred));
-        public static XForm<A, I, I> Take<A, I>(long n) => rf => {
+        public static IXForm<I, O> MapCat<I, O>(Func<I, IEnumerable<O>> fn) =>
+            new MapCatXF<I, O>(fn);
+        public static IXForm<I, O> Map<I, O>(Func<I, O> fn) => new MapXF<I, O>(fn);
+        public static IXForm<I, I> Filter<I>(Predicate<I> pred) =>
+            new FilterXF<I>(pred);
+        public static IXForm<I, I> Remove<A, I>(Predicate<I> pred) =>
+            new FilterXF<I>(Compliment(pred));
+        public static IXForm<I, I> Take<I>(long n) => new TakeXF<I>(n);
+        public static IXForm<I, I> Drop<I>(long n) => new DropXF<I>(n);
+    }
+
+    public interface IXForm<I, O> {
+        public RF<A, I> XForm<A>(RF<A, O> rf);
+        public IXForm<I, R> Comp<R>(IXForm<O, R> xform)
+            => new CompXF<I, O, R>(this, xform);
+    }
+
+    public record MapCatXF<I, O>(Func<I, IEnumerable<O>> mapFn) : IXForm<I, O> {
+        public RF<A, I> XForm<A>(RF<A, O> rf) =>
+            (acc, item) => mapFn(item).Reduce((a, i) => rf(a, i), acc);
+    }
+
+    public record MapXF<I, O>(Func<I, O> mapFn) : IXForm<I, O> {
+        public RF<A, I> XForm<A>(RF<A, O> rf) =>
+            (acc, item) => rf(acc, mapFn(item));
+    }
+
+    public record FilterXF<I>(Predicate<I> pred) : IXForm<I, I> {
+        public RF<A, I> XForm<A>(RF<A, I> rf) =>
+            (acc, item) => pred(item) ? acc : rf(acc, item);
+    }
+
+    public record TakeXF<I>(long n) : IXForm<I, I> {
+        public RF<A, I> XForm<A>(RF<A, I> rf) {
             long items = n;
             return (acc, item) =>
                 items-- > 0 ? rf(acc, item) : Reduction<A>.Reduced(acc.Get());
-        };
-        public static XForm<A, I, I> Drop<A, I>(long n) => rf => {
+        }
+    }
+
+    public record DropXF<I>(long n) : IXForm<I, I> {
+        public RF<A, I> XForm<A>(RF<A, I> rf) {
             long items = n;
             return (acc, item) =>
                 items-- <= 0 ? rf(acc, item) : Reduction<A>.Reduced(acc.Get());
-        };
-        public static XForm<A, I, O> Comp<A, I, M, O>(
-            this XForm<A, I, M> xform1,
-            XForm<A, M, O> xform2) => rf => xform1(xform2(rf));
+        }
+    }
+
+    public record CompXF<I, M, O>(IXForm<I, M> xf1, IXForm<M, O> xf2) : IXForm<I, O> {
+        public RF<A, I> XForm<A>(RF<A, O> rf) => xf1.XForm(xf2.XForm(rf));
     }
 
     public class MultiMethod<T, U, R> {
