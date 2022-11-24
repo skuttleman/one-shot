@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class CollisionListener : Subscriber<Event<PlayerStance>> {
     [SerializeField] PlayerStance stance;
-    BoxCollider collide;
+    Collider collide;
 
     new void Start() {
         base.Start();
-        collide = GetComponent<BoxCollider>();
+        collide = GetComponent<Collider>();
     }
 
     public override void OnEvent(Event<PlayerStance> e) =>

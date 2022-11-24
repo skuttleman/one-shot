@@ -3,6 +3,7 @@ using Game.Utils;
 using UnityEngine;
 using Game.Utils.Mono;
 using Game.System.Events;
+using System;
 
 public class CameraController
     : Subscriber<PlayerScopeChange, PlayerMovementSpeedChange, Event<PlayerAttackMode>> {
@@ -40,6 +41,7 @@ public class CameraController
         if (isAiming) lookAhead += aimOffset;
 
         lookAhead = Mathf.Clamp(lookAhead, 0f, maxLookAhead);
+
         offset.m_Offset = Vector3.Lerp(
             offset.m_Offset,
             target.rotation * new Vector3(0, lookAhead, 0),

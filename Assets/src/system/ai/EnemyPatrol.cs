@@ -48,7 +48,7 @@ namespace Game.System.AI.Patrol {
     public class PatrolCycle : APatrol {
         private PatrolCycle(IEnumerable<IPatrol> instructions) : base(instructions) { }
         public static PatrolCycle Of(IEnumerable<IPatrol> instructions) =>
-            new(Sequences.Cycle(instructions));
+            new(instructions.Cycle());
     }
 
     namespace Composables {

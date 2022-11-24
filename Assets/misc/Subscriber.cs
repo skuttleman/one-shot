@@ -7,12 +7,11 @@ using System.Collections.Concurrent;
 namespace Game.Utils.Mono {
     public abstract class Subscriber<T> : MonoBehaviour
         where T : IEvent {
-        ConcurrentQueue<IEvent> q;
+        readonly ConcurrentQueue<IEvent> q = new();
         internal IPubSub<IEvent> pubsub;
         long[] subs;
 
         protected void Start() {
-            q = new();
             pubsub = FindObjectOfType<GameSession>().Get<IPubSub<IEvent>>();
             subs = new long[] {
                 pubsub.Subscribe<T>(e => q.Enqueue(e))
@@ -480,7 +479,7 @@ namespace Game.Utils.Mono {
 
     static class SubscriberUtils {
         public static void Unsubscribe(IPubSub<IEvent> pubsub, params long[] subs) {
-            Sequences.ForEach(subs, sub => {
+            subs.ForEach(sub => {
                 try {
                     pubsub.Unsubscribe(sub);
                 } catch (Exception ex) {

@@ -3,9 +3,11 @@ using UnityEngine;
 
 namespace Game.Utils {
     public static class Vectors {
-        public static Vector3 Upgrade(Vector2 vector) =>
+        public static Vector3 Upgrade(this Vector2 vector) =>
             new(vector.x, vector.y, 0f);
-        public static Vector2 Downgrade(Vector3 vector) =>
+        public static Vector3 Upgrade(this Vector2 vector, float z) =>
+            new(vector.x, vector.y, z);
+        public static Vector2 Downgrade(this Vector3 vector) =>
             new(vector.x, vector.y);
 
         public static float AngleTo(Vector2 direction) {

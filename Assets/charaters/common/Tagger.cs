@@ -1,11 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Tagger : MonoBehaviour
 {
+    GameSession session;
     [SerializeField] string[] tags;
 
-    void OnEnable() => Register(FindObjectOfType<GameSession>());
-    void Register(GameSession sess) => sess.RegisterTags(tags, gameObject);
+    void Start() {
+        session = FindObjectOfType<GameSession>();
+        session.RegisterTags(tags, gameObject);
+    }
+
+    void OnDestroy() => session?.UnregisterTags(gameObject);
 }

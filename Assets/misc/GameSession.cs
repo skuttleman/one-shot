@@ -16,7 +16,7 @@ public class GameSession : MonoBehaviour {
     IDictionary<Type, Task> tasks;
 
     public void RegisterTags(IEnumerable<string> tags, GameObject obj) {
-        Sequences.ForEach(tags, tag => {
+        tags.ForEach(tag => {
             Colls.Update(
                 taggedObjects,
                 tag,
@@ -30,11 +30,19 @@ public class GameSession : MonoBehaviour {
         });
     }
 
+    public void UnregisterTags(GameObject obj) {
+        objectTags.Get(obj, new HashSet<string>())
+            .ForEach(tag => taggedObjects
+                .Update(tag, set => Colls
+                    .Remove(set, obj), () => new HashSet<GameObject>()));
+        objectTags.Remove(obj);
+    }
+
     public GameObject GetTaggedObject(string tag) {
         ISet<GameObject> objects = GetTaggedObjects(tag);
         if (objects.Count > 1)
             throw new InvalidOperationException("More than one item found for tag: " + tag);
-        return Sequences.First(objects);
+        return objects.First();
     }
 
     public ISet<string> GetObjectTags(GameObject obj) => Colls.Get(objectTags, obj);
@@ -58,11 +66,15 @@ public class GameSession : MonoBehaviour {
             return;
         }
         DontDestroyOnLoad(gameObject);
+        Init();
+    }
+
+    void Init() {
         system = GameSystem.Default(this);
         taggedObjects = new Dictionary<string, ISet<GameObject>>();
         objectTags = new Dictionary<GameObject, ISet<string>>();
         tasks = new Dictionary<Type, Task>();
-        Sequences.ForEach(system, tpl => StartComponent(tpl.Item1, tpl.Item2));
+        system.ForEach(tpl => StartComponent(tpl.Item1, tpl.Item2));
     }
 
     void Start() {
@@ -75,7 +87,7 @@ public class GameSession : MonoBehaviour {
         tasks[type] = new Task(() => {
             while (true) {
                 component.Tick(this);
-                Thread.Sleep(1);
+                Thread.Sleep(16);
             }
         });
         tasks[type].Start();
@@ -88,5 +100,6 @@ public class GameSession : MonoBehaviour {
         } catch (Exception) { }
     }
 
-    void OnDestroy() => Sequences.ForEach(system, tpl => StopComponent(tpl.Item1));
+    void OnDestroy() => (system ?? Sequences.Empty<(Type, IComponent)>()
+        ).ForEach(tpl => StopComponent(tpl.Item1));
 }

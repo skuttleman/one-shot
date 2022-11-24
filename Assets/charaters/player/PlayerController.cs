@@ -11,6 +11,7 @@ public class PlayerController : Subscriber
     <Event<PlayerStance>, Event<PlayerAttackMode>,
      PlayerMovementSpeedChange, PlayerScopeChange> {
     Animator animator;
+    Rigidbody rb;
     Vector2 movement = Vector2.zero;
 
     // animation state
@@ -23,31 +24,36 @@ public class PlayerController : Subscriber
     [SerializeField] float walkSpeed = 2.5f;
     [SerializeField] float crouchSpeed = 1.5f;
     [SerializeField] float crawlSpeed = 0.75f;
-    [SerializeField] float rotationSpeed = 8f;
+    [SerializeField] float rotationSpeed = 1f;
     float rotationZ = 0f;
-    float movementModifer = 1f;
 
     new void Start() {
         base.Start();
         animator = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>();
     }
 
-    new void Update() {
-        base.Update();
-        RotatePlayer();
-        MovePlayer();
+    Vector3 RotationDirection(float oldRot, float newRot) {
+        Vector3 LEFT = Vector3.back;
+        Vector3 RIGHT = Vector3.forward;
+
+        float difference = Mathf.Abs(oldRot - newRot);
+        if (oldRot < newRot && difference >= 180) return LEFT;
+        else if (oldRot < newRot) return RIGHT;
+        else if (oldRot > newRot && difference >= 180) return RIGHT;
+        return LEFT;
     }
 
     void RotatePlayer() {
-        transform.rotation = Quaternion.Lerp(
-            transform.rotation,
-            Quaternion.Euler(0, 0, rotationZ),
-            rotationSpeed * Time.deltaTime);
+        float currentRotation = (rb.rotation.eulerAngles.z + 360) % 360;
+        rotationZ = (rotationZ + 360) % 360;
+
+        rb.AddRelativeTorque(rotationSpeed * Time.fixedDeltaTime * RotationDirection(currentRotation, rotationZ));
     }
 
     void MovePlayer() {
         if (IsMovable()) {
-            float speed = movementModifer * StanceSpeed();
+            float speed = StanceSpeed();
 
             if (IsAiming()) speed *= 0.9f;
             else if (isScoping) speed *= 0.6f;
@@ -55,8 +61,13 @@ public class PlayerController : Subscriber
                 Mathf.Abs(movement.x),
                 Mathf.Abs(movement.y));
             animator.speed = movementSpeed * speed;
-            transform.position += speed * Time.deltaTime * Vectors.Upgrade(movement);
+            rb.AddRelativeForce(Vector3.up * animator.speed);
         }
+    }
+
+    void FixedUpdate() {
+        RotatePlayer();
+        MovePlayer();
     }
 
     float StanceSpeed() {
@@ -98,8 +109,7 @@ public class PlayerController : Subscriber
         }
     }
 
-    public void InputMoveModified(bool isModified) =>
-        movementModifer = isModified ? 0.5f : 1f;
+    public void InputMoveModified(bool _) { }
     public void InputAim(bool isAiming) =>
         animator.SetBool("isAiming", isAiming);
     public void InputScope(bool isScoping) =>
