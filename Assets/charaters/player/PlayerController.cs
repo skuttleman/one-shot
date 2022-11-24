@@ -3,29 +3,22 @@ using Game.Utils;
 using Game.System.Events.Player;
 using Game.Utils.Mono;
 using Game.System.Events;
-using System.Threading;
-using System;
 using System.Collections.Generic;
 
 public class PlayerController : Subscriber
     <Event<PlayerStance>, Event<PlayerAttackMode>,
      PlayerMovementSpeedChange, PlayerScopeChange> {
+    [SerializeField] PlayerConfig cfg;
     Animator animator;
     Rigidbody rb;
-    Vector2 movement = Vector2.zero;
 
-    // animation state
+    // movement state
     PlayerAttackMode mode;
     PlayerStance stance;
+    Vector2 movement = Vector2.zero;
+    float rotationZ = 0f;
     bool isMoving;
     bool isScoping;
-
-    // movement modifiers
-    [SerializeField] float walkSpeed = 2.5f;
-    [SerializeField] float crouchSpeed = 1.5f;
-    [SerializeField] float crawlSpeed = 0.75f;
-    [SerializeField] float rotationSpeed = 1f;
-    float rotationZ = 0f;
 
     new void Start() {
         base.Start();
@@ -33,27 +26,16 @@ public class PlayerController : Subscriber
         rb = GetComponent<Rigidbody>();
     }
 
-    Vector3 RotationDirection(float oldRot, float newRot) {
-        Vector3 LEFT = Vector3.back;
-        Vector3 RIGHT = Vector3.forward;
-
-        float difference = Mathf.Abs(oldRot - newRot);
-        if (oldRot < newRot && difference >= 180) return LEFT;
-        else if (oldRot < newRot) return RIGHT;
-        else if (oldRot > newRot && difference >= 180) return RIGHT;
-        return LEFT;
-    }
-
     void RotatePlayer() {
         float currentRotation = (rb.rotation.eulerAngles.z + 360) % 360;
         rotationZ = (rotationZ + 360) % 360;
 
-        rb.AddRelativeTorque(rotationSpeed * Time.fixedDeltaTime * RotationDirection(currentRotation, rotationZ));
+        rb.AddRelativeTorque(StanceRotationSpeed() * Time.fixedDeltaTime * cfg.RotationDirection(currentRotation, rotationZ));
     }
 
     void MovePlayer() {
         if (IsMovable()) {
-            float speed = StanceSpeed();
+            float speed = StanceMovementSpeed();
 
             if (IsAiming()) speed *= 0.9f;
             else if (isScoping) speed *= 0.6f;
@@ -70,10 +52,16 @@ public class PlayerController : Subscriber
         MovePlayer();
     }
 
-    float StanceSpeed() {
-        if (IsCrouching()) return crouchSpeed;
-        if (IsCrawling()) return crawlSpeed;
-        return walkSpeed;
+    float StanceMovementSpeed() {
+        if (IsCrouching()) return cfg.crouchSpeed;
+        if (IsCrawling()) return cfg.crawlSpeed;
+        return cfg.walkSpeed;
+    }
+
+    float StanceRotationSpeed() {
+        if (IsCrouching()) return cfg.crouchRotationSpeed;
+        if (IsCrawling()) return cfg.crawlRotationSpeed;
+        return cfg.walkRotationSpeed;
     }
 
     public void InputAttack(bool isAttacking) {
