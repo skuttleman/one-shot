@@ -7,31 +7,28 @@ namespace Game.Utils {
         // void reduction
         public static void DoAll<T>(this IEnumerable<T> coll) => ForEach(coll, _ => { });
         public static void ForEach<T>(this IEnumerable<T> coll, Action<T> action) {
-            if (coll != null) foreach (T item in coll) action(item);
+            foreach (T item in coll ?? Empty<T>()) action(item);
         }
 
         // value reduction
         public static U Reduce<T, U>(this IEnumerable<T> coll, Func<U, T, U> reducer, U init) {
             U result = init;
-            if (coll != null) {
-                foreach (T item in coll) result = reducer(result, item);
-            }
+            foreach (T item in coll ?? Empty<T>()) result = reducer(result, item);
             return result;
         }
         public static U ReduceUntil<T, U>(this IEnumerable<T> coll, Func<U, T, Reduction<U>> reducer, U init) {
             U result = init;
-            if (coll != null) {
-                foreach (T item in coll) {
-                    Reduction<U> next = reducer(result, item);
-                    result = next.Get();
-                    if (next.IsReduced()) return result;
-                }
+            foreach (T item in coll ?? Empty<T>()) {
+                Reduction<U> next = reducer(result, item);
+                result = next.Get();
+                if (next.IsReduced()) return result;
             }
             return result;
         }
 
         // sequence transposition
         public static IEnumerable<T> Rest<T>(this IEnumerable<T> coll) {
+            if (coll == null) yield break;
             IEnumerator<T> en = coll.GetEnumerator();
             en.MoveNext();
             while (en.MoveNext()) yield return en.Current;
@@ -53,24 +50,31 @@ namespace Game.Utils {
             Filter(coll, Fns.Compliment(pred));
         public static IEnumerable<T> Take<T>(this IEnumerable<T> coll, long n) {
             long items = n;
-            foreach (T item in coll) {
+            foreach (T item in coll ?? Empty<T>()) {
                 if (items-- > 0) yield return item;
                 else yield break;
             }
         }
         public static IEnumerable<T> Drop<T>(this IEnumerable<T> coll, long n) =>
             n > 0 ? Drop(Rest(coll), n - 1) : coll;
+        public static IEnumerable<IEnumerable<T>> PartitionAll<T>(this IEnumerable<T> coll, long n) {
+            IEnumerable<T> more = coll;
+            while (!more.IsEmpty()) {
+                yield return more.Take(n);
+                more = more.Drop(n);
+            }
+        }
 
         // generation
         public static IEnumerable<T> Empty<T>() {
             yield break;
         }
         public static IEnumerable<T> Of<T>(params T[] items) {
-            foreach (T item in items) yield return item;
+            foreach (T item in items ?? Empty<T>()) yield return item;
         }
         public static IEnumerable<T> Concat<T>(this IEnumerable<T> coll, params IEnumerable<T>[] seqs) {
             foreach (IEnumerable<T> seq in Cons(coll, seqs))
-                foreach (T item in seq)
+                foreach (T item in seq ?? Empty<T>())
                     yield return item;
         }
         public static IEnumerable<T> Iterate<T>(T init, Func<T, T> nextFn) {
@@ -82,11 +86,11 @@ namespace Game.Utils {
         }
         public static IEnumerable<T> Cons<T>(T head, IEnumerable<T> tail) {
             yield return head;
-            foreach (T item in tail) yield return item;
+            foreach (T item in tail ?? Empty<T>()) yield return item;
         }
         public static IEnumerable<T> Cycle<T>(this IEnumerable<T> coll) {
             while (true)
-                foreach (T item in coll)
+                foreach (T item in coll ?? Empty<T>())
                     yield return item;
         }
 
@@ -94,9 +98,11 @@ namespace Game.Utils {
         public static T Find<T>(this IEnumerable<T> coll, Predicate<T> pred) =>
         coll.Filter(pred).First();
         public static T First<T>(this IEnumerable<T> coll) {
-            if (coll != null) foreach (T item in coll) return item;
+            foreach (T item in coll ?? Empty<T>()) return item;
             return default;
         }
+        public static bool IsEmpty<T>(this IEnumerable<T> coll) =>
+            !coll.GetEnumerator().MoveNext();
 
         // transduction
         public static A Transduce<A, I, O>(
@@ -112,34 +118,27 @@ namespace Game.Utils {
                 init);
         }
         public static IEnumerable<O> Sequence<I, O>(this IEnumerable<I> coll, IXForm<I, O> xform) {
-            return coll.Map(_SeqStepFn(xform))
-                .Map(x => { Debug.Log("PEEKING " + x.GetType()); return x; })
-                .Filter(item => item.IsReduced())
-                .Map(item => item.Get());
+            foreach (IEnumerable<I> seq in coll?.PartitionAll(32) ?? Empty<IEnumerable<I>>())
+                foreach (O output in seq.Transduce(xform, Colls.Add, new List<O>()))
+                    yield return output;
         }
 
         // internal
-        private static Func<I, Reduction<O>> _SeqStepFn<I, O>(IXForm<I, O> xform) {
-            RF<O, I> rf = xform.XForm<O>((_, item) => Reduction<O>.Reduced(item));
-            return item => rf(default, item);
-        }
         private static IEnumerable<U> _Expand<T, U>(IEnumerable<T> coll, Func<T, IEnumerable<U>> expander) {
-            if (coll != null)
-                foreach (T input in coll)
-                    foreach (U item in expander(input))
-                        yield return item;
+            foreach (T input in coll ?? Empty<T>())
+                foreach (U item in expander(input) ?? Empty<U>())
+                    yield return item;
         }
         private static IEnumerable<V> _Expand<T, U, V>(
             IEnumerable<T> coll1,
             IEnumerable<U> coll2,
             Func<T, U, IEnumerable<V>> expander) {
-            if (coll1 != null && coll2 != null) {
-                IEnumerator<T> iter1 = coll1.GetEnumerator();
-                IEnumerator<U> iter2 = coll2.GetEnumerator();
+            IEnumerator<T> iter1 = coll1?.GetEnumerator();
+            IEnumerator<U> iter2 = coll2?.GetEnumerator();
 
             while (true) {
                 if ((iter1?.MoveNext() ?? false) && (iter2?.MoveNext() ?? false))
-                    foreach (V item in expander(iter1.Current, iter2.Current))
+                    foreach (V item in expander(iter1.Current, iter2.Current) ?? Empty<V>())
                         yield return item;
                 else yield break;
             }
