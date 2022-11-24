@@ -39,8 +39,7 @@ public class GameSystem : IEnumerable<(Type, IComponent)> {
     }
 
     public IEnumerator<(Type, IComponent)> GetEnumerator() =>
-        Sequences
-            .Map(components, entry => (entry.Key, entry.Value))
+        components.Map(entry => (entry.Key, entry.Value))
             .GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

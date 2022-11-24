@@ -14,6 +14,7 @@ namespace Game.System.Events {
     }
 
     namespace Enemy {
+        public enum EnemyAttackMode {  NONE, HAND, WEAPON, FIRING, BUTTING }
         public record EnemyCanSeePlayer<T>(
             T enemy,
             Vector3 origin,

@@ -890,7 +890,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 965d935d553b7422eb80aab63aeb82c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patrolSpeed: 0.25
+  patrolSpeed: 0.15
   rotationSpeed: 3.5
   patrolSteps:
   - position: {x: -4, y: -4, z: -0.1}

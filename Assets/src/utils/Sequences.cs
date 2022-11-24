@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Game.Utils {
     public static class Sequences {
@@ -48,7 +48,7 @@ namespace Game.Utils {
                 coll2,
                 (item1, item2) => new V[] { fn(item1, item2) });
         public static IEnumerable<T> Filter<T>(this IEnumerable<T> coll, Predicate<T> pred) =>
-            _Expand(coll, item => pred(item) ? new T[] { item } : new T[] { });
+            _Expand(coll, item => pred(item) ? Of(item) : Empty<T>());
         public static IEnumerable<T> Remove<T>(this IEnumerable<T> coll, Predicate<T> pred) =>
             Filter(coll, Fns.Compliment(pred));
         public static IEnumerable<T> Take<T>(this IEnumerable<T> coll, long n) {
@@ -62,6 +62,12 @@ namespace Game.Utils {
             n > 0 ? Drop(Rest(coll), n - 1) : coll;
 
         // generation
+        public static IEnumerable<T> Empty<T>() {
+            yield break;
+        }
+        public static IEnumerable<T> Of<T>(params T[] items) {
+            foreach (T item in items) yield return item;
+        }
         public static IEnumerable<T> Concat<T>(this IEnumerable<T> coll, params IEnumerable<T>[] seqs) {
             foreach (IEnumerable<T> seq in Cons(coll, seqs))
                 foreach (T item in seq)
@@ -105,8 +111,18 @@ namespace Game.Utils {
                 (acc, item) => reduceFn(Reduction<A>.UnReduced(acc), item),
                 init);
         }
+        public static IEnumerable<O> Sequence<I, O>(this IEnumerable<I> coll, IXForm<I, O> xform) {
+            return coll.Map(_SeqStepFn(xform))
+                .Map(x => { Debug.Log("PEEKING " + x.GetType()); return x; })
+                .Filter(item => item.IsReduced())
+                .Map(item => item.Get());
+        }
 
         // internal
+        private static Func<I, Reduction<O>> _SeqStepFn<I, O>(IXForm<I, O> xform) {
+            RF<O, I> rf = xform.XForm<O>((_, item) => Reduction<O>.Reduced(item));
+            return item => rf(default, item);
+        }
         private static IEnumerable<U> _Expand<T, U>(IEnumerable<T> coll, Func<T, IEnumerable<U>> expander) {
             if (coll != null)
                 foreach (T input in coll)
@@ -121,14 +137,11 @@ namespace Game.Utils {
                 IEnumerator<T> iter1 = coll1.GetEnumerator();
                 IEnumerator<U> iter2 = coll2.GetEnumerator();
 
-                while (true) {
-                    if (iter1.MoveNext()) {
-                        if (iter2.MoveNext()) {
-                            foreach (V item in expander(iter1.Current, iter2.Current))
-                                yield return item;
-                        } else break;
-                    } else break;
-                }
+            while (true) {
+                if ((iter1?.MoveNext() ?? false) && (iter2?.MoveNext() ?? false))
+                    foreach (V item in expander(iter1.Current, iter2.Current))
+                        yield return item;
+                else yield break;
             }
         }
     }

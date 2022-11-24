@@ -16,7 +16,7 @@ public class EnemyController : MonoBehaviour {
 
     void Start() {
         anim = GetComponent<Animator>();
-        IPatrol patrol = PatrolCycle.Of(Sequences.Map(patrolSteps, GeneratePatrol));
+        IPatrol patrol = PatrolCycle.Of(patrolSteps.Map(GeneratePatrol));
         StartCoroutine(APatrol.DoPatrol(patrol, transform));
     }
 
