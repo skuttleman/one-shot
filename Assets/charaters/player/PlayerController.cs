@@ -15,7 +15,7 @@ public class PlayerController : Subscriber
     private static readonly string STANCE_INT = "stance";
 
 
-    [SerializeField] PlayerConfig cfg;
+    [SerializeField] PlayerCoreConfig cfg;
     Animator animator;
     Rigidbody rb;
 
@@ -23,9 +23,10 @@ public class PlayerController : Subscriber
     PlayerAttackMode mode;
     PlayerStance stance;
     Vector2 movement = Vector2.zero;
-    float rotationZ = 0f;
+    Vector2 facing = Vector2.zero;
     bool isMoving;
     bool isScoping;
+    bool isLooking;
 
     new void Start() {
         base.Start();
@@ -34,8 +35,17 @@ public class PlayerController : Subscriber
     }
 
     void RotatePlayer() {
-        Vector3 torque = cfg.RotationTorque(stance, rb.rotation.eulerAngles.z, rotationZ);
-        rb.AddRelativeTorque(torque);
+        float rotationZ;
+        if (isLooking) rotationZ = Vectors.AngleTo(Vector2.zero, facing);
+        else if (Vectors.NonZero(movement)) rotationZ = Vectors.AngleTo(Vector2.zero, movement);
+        else return;
+
+        Vector3 torque = cfg.RotationTorque(
+            stance,
+            rb.rotation.eulerAngles.z,
+            rotationZ);
+        if (torque != Vector3.zero)
+            rb.AddRelativeTorque(torque);
     }
 
     void MovePlayer() {
@@ -46,7 +56,8 @@ public class PlayerController : Subscriber
                 movement,
                 IsAiming(),
                 isScoping);
-            rb.AddRelativeForce(Vector3.up * force);
+            if (Maths.NonZero(force))
+                rb.AddForce(movement.normalized * force);
         }
     }
 
@@ -61,15 +72,13 @@ public class PlayerController : Subscriber
     }
 
     public void InputLook(Vector2 direction) {
-        if (Vectors.NonZero(direction))
-            rotationZ = Vectors.AngleTo(Vector2.zero, direction);
+        facing = direction;
+        isLooking = Vectors.NonZero(facing);
     }
 
     public void InputMove(Vector2 direction) {
         movement = direction;
-        bool isMoving = Vectors.NonZero(movement);
-        if (isMoving) rotationZ = Vectors.AngleTo(Vector2.zero, movement);
-        animator.SetBool(MOVE_BOOL, isMoving);
+        animator.SetBool(MOVE_BOOL, Vectors.NonZero(movement));
     }
 
     public void InputStance(float value) {
