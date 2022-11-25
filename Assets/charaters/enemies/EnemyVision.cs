@@ -25,7 +25,7 @@ public class EnemyVision :
     [Header("Other Settings")]
     [SerializeField] float speedMultiplier = 5f;
     [SerializeField] float distanceMultiplier = 10f;
-    [SerializeField] string playerTag = "Player";
+    [SerializeField] string playerTag = "player";
     [SerializeField] LayerMask layerMask;
 
     GameSession session;
@@ -89,15 +89,15 @@ public class EnemyVision :
     }
 
     private void OnTriggerStay(Collider other) {
-        if (other.gameObject.CompareTag(playerTag)
+        if (session.GetObjectTags(other.gameObject).Contains(playerTag)
             && LineOfSite(out RaycastHit hit)
-            && hit.collider == other) {
+            && hit.collider == other)
+
             pubsub.Publish(new EnemyCanSeePlayer<EnemyVision>(
                 this,
                 gameObject.transform.position,
                 hit.point,
                 hit.distance));
-        }
     }
 
     public override void OnEvent(Event<PlayerStance> e) => playerStance = e.data;

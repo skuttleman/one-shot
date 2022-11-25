@@ -8,6 +8,13 @@ using System.Collections.Generic;
 public class PlayerController : Subscriber
     <Event<PlayerStance>, Event<PlayerAttackMode>,
      PlayerMovementSpeedChange, PlayerScopeChange> {
+    private static readonly string ATTACK_TRIGGER = "attack";
+    private static readonly string MOVE_BOOL = "isMoving";
+    private static readonly string AIM_BOOL = "isAiming";
+    private static readonly string SCOPE_BOOL = "isScoping";
+    private static readonly string STANCE_INT = "stance";
+
+
     [SerializeField] PlayerConfig cfg;
     Animator animator;
     Rigidbody rb;
@@ -27,45 +34,30 @@ public class PlayerController : Subscriber
     }
 
     void RotatePlayer() {
-        float currentRotation = (rb.rotation.eulerAngles.z + 360) % 360;
-        rotationZ = (rotationZ + 360) % 360;
-
-        rb.AddRelativeTorque(StanceRotationSpeed() * Time.fixedDeltaTime * cfg.RotationDirection(currentRotation, rotationZ));
+        Vector3 torque = cfg.RotationTorque(stance, rb.rotation.eulerAngles.z, rotationZ);
+        rb.AddRelativeTorque(torque);
     }
 
     void MovePlayer() {
-        if (IsMovable()) {
-            float speed = StanceMovementSpeed();
-
-            if (IsAiming()) speed *= 0.9f;
-            else if (isScoping) speed *= 0.6f;
-            float movementSpeed = Mathf.Max(
-                Mathf.Abs(movement.x),
-                Mathf.Abs(movement.y));
-            animator.speed = movementSpeed * speed;
-            rb.AddRelativeForce(Vector3.up * animator.speed);
+        if (IsMovable(stance)) {
+            animator.speed = cfg.AnimationSpeed(stance, movement);
+            float force = cfg.MovementForce(
+                stance,
+                movement,
+                IsAiming(),
+                isScoping);
+            rb.AddRelativeForce(Vector3.up * force);
         }
     }
 
     void FixedUpdate() {
         RotatePlayer();
         MovePlayer();
-    }
-
-    float StanceMovementSpeed() {
-        if (IsCrouching()) return cfg.crouchSpeed;
-        if (IsCrawling()) return cfg.crawlSpeed;
-        return cfg.walkSpeed;
-    }
-
-    float StanceRotationSpeed() {
-        if (IsCrouching()) return cfg.crouchRotationSpeed;
-        if (IsCrawling()) return cfg.crawlRotationSpeed;
-        return cfg.walkRotationSpeed;
+        rb.velocity = cfg.LimitVelocity(stance, rb.velocity);
     }
 
     public void InputAttack(bool isAttacking) {
-        if (isAttacking && CanAttack()) animator.SetTrigger("attack");
+        if (isAttacking && CanAttack()) animator.SetTrigger(ATTACK_TRIGGER);
     }
 
     public void InputLook(Vector2 direction) {
@@ -77,43 +69,35 @@ public class PlayerController : Subscriber
         movement = direction;
         bool isMoving = Vectors.NonZero(movement);
         if (isMoving) rotationZ = Vectors.AngleTo(Vector2.zero, movement);
-        animator.SetBool("isMoving", isMoving);
+        animator.SetBool(MOVE_BOOL, isMoving);
     }
 
     public void InputStance(float value) {
-        bool held = value >= 0.35f;
-        PlayerStance nextStance;
+        PlayerStance nextStance = cfg.NextStance(stance, value);
 
-        if (held && IsCrawling()) nextStance = PlayerStance.STANDING;
-        else if (held) nextStance = PlayerStance.CRAWLING;
-        else if (IsCrouching()) nextStance = PlayerStance.STANDING;
-        else nextStance = PlayerStance.CROUCHING;
-
-        if (nextStance != PlayerStance.CRAWLING
-            || (!IsAiming() && !isScoping)
-            || !isMoving) {
+        if (IsMovable(nextStance) || !isMoving) {
             stance = nextStance;
-            animator.SetInteger("stance", (int)stance);
+            animator.SetInteger(STANCE_INT, (int)stance);
         }
     }
 
     public void InputMoveModified(bool _) { }
     public void InputAim(bool isAiming) =>
-        animator.SetBool("isAiming", isAiming);
+        animator.SetBool(AIM_BOOL, isAiming);
     public void InputScope(bool isScoping) =>
-        animator.SetBool("isScoping", isScoping);
-    bool IsCrawling() => stance == PlayerStance.CRAWLING;
-    bool IsCrouching() => stance == PlayerStance.CROUCHING;
-    bool IsAiming() => mode == PlayerAttackMode.WEAPON
-        || mode == PlayerAttackMode.FIRING;
-    bool IsMovable() => !IsCrawling() || (!IsAiming() && !isScoping);
+        animator.SetBool(SCOPE_BOOL, isScoping);
+
     public override void OnEvent(PlayerScopeChange e) => isScoping = e.data;
     public override void OnEvent(Event<PlayerStance> e) => stance = e.data;
     public override void OnEvent(Event<PlayerAttackMode> e) => mode = e.data;
     public override void OnEvent(PlayerMovementSpeedChange e) =>
         isMoving = Maths.NonZero(e.data);
 
-    private bool CanAttack() =>
+    bool IsAiming() =>
+        mode == PlayerAttackMode.WEAPON || mode == PlayerAttackMode.FIRING;
+    bool IsMovable(PlayerStance stance) =>
+        stance != PlayerStance.CRAWLING || (!IsAiming() && !isScoping);
+    bool CanAttack() =>
         mode != PlayerAttackMode.NONE
             && mode != PlayerAttackMode.FIRING
             && mode != PlayerAttackMode.PUNCHING;

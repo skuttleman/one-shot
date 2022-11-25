@@ -12,7 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcbc0a22fa6e243c282d1dad1030a3a8, type: 3}
   m_Name: Config
   m_EditorClassIdentifier: 
-  walkSpeed: 30
-  crouchSpeed: 28
-  crawlSpeed: 26
-  rotationSpeed: 75
+  walkSpeed: 50
+  maxWalkVelocity: 5
+  walkRotationSpeed: 600
+  maxStandAnimSpeed: 1
+  crouchSpeed: 35
+  maxCrouchVelocity: 4
+  crouchRotationSpeed: 550
+  maxCrouchAnimSpeed: 1
+  crawlSpeed: 33
+  maxCrawlelocity: 3
+  crawlRotationSpeed: 800
+  maxCrawlAnimSpeed: 1
+  rotationTolerance: 20
+  aimFactor: 0.9
+  scopeFactor: 0.6
+  stanceChangeButtonHeldDuration: 0.35

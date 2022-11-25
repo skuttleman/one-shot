@@ -96,10 +96,11 @@ namespace Game.Utils {
 
         // extraction
         public static T Find<T>(this IEnumerable<T> coll, Predicate<T> pred) =>
-        coll.Filter(pred).First();
+            coll.Filter(pred).First();
         public static T First<T>(this IEnumerable<T> coll) {
-            foreach (T item in coll ?? Empty<T>()) return item;
-            return default;
+            IEnumerator<T> iter = (coll ?? Empty<T>()).GetEnumerator();
+            iter.MoveNext();
+            return iter.Current;
         }
         public static bool IsEmpty<T>(this IEnumerable<T> coll) =>
             !coll.GetEnumerator().MoveNext();

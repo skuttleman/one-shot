@@ -9,6 +9,13 @@ namespace Game.Utils {
             new(vector.x, vector.y, z);
         public static Vector2 Downgrade(this Vector3 vector) =>
             new(vector.x, vector.y);
+        public static float Max(this Vector2 vector) =>
+            Max(vector.Upgrade());
+        public static float Max(this Vector3 vector) =>
+            Mathf.Max(
+                Mathf.Abs(vector.x),
+                Mathf.Abs(vector.y),
+                Mathf.Abs(vector.z));
 
         public static float AngleTo(Vector2 direction) {
             Vector2 dir = direction.normalized;
