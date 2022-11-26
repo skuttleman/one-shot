@@ -6,7 +6,7 @@ public class Tagger : MonoBehaviour
     GameSession session;
     [SerializeField] string[] tags;
 
-    void Start() {
+    void OnEnable() {
         session = FindObjectOfType<GameSession>();
         session.RegisterTags(tags, gameObject);
     }

@@ -46,7 +46,7 @@ public class GameSession : MonoBehaviour {
     }
 
     public ISet<string> GetObjectTags(GameObject obj) => Colls.Get(objectTags, obj);
-    public ISet<GameObject> GetTaggedObjects(string tag) => Colls.Get(taggedObjects, tag);
+    public ISet<GameObject> GetTaggedObjects(string tag) => Colls.Get(taggedObjects, tag, new HashSet<GameObject>());
     public GameObject GetPlayer() => GetTaggedObject("player");
     public T Get<T>() => system.Get<T>();
 

@@ -9,6 +9,12 @@ namespace Game.Utils {
             new(vector.x, vector.y, z);
         public static Vector2 Downgrade(this Vector3 vector) =>
             new(vector.x, vector.y);
+        public static Vector3 Clamp(Vector3 vector, Vector3 lower, Vector3 upper) {
+            return new Vector3(
+                Mathf.Clamp(vector.x, lower.x, upper.x),
+                Mathf.Clamp(vector.y, lower.y, upper.y),
+                Mathf.Clamp(vector.z, lower.z, upper.z));
+        }
 
         public static float AngleTo(Vector2 direction) {
             Vector2 dir = direction.normalized;
